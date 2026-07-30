@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Hub - Bảo Mật Sinh Trắc Học</title>
+    <title>Link Hub - Quản Trị</title>
     <style>
         :root { --bg: #f4f7fc; --sidebar: #ffffff; --primary: #2563eb; --text-main: #1f2937; --text-sub: #4b5563; --border: #e5e7eb; }
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background-color: var(--bg); }
         
-        /* Sidebar cập nhật theo image_0ff3f3.png */
+        /* Sidebar */
         .sidebar { width: 280px; background: var(--sidebar); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid var(--border);}
+        
+        /* Cập nhật phần Logo: Chỉ hiện ảnh logo.jpg, không hiện text */
+        .logo { display: flex; justify-content: center; margin-bottom: 30px; }
+        .logo img { width: 65px; height: 65px; object-fit: contain; border-radius: 12px; }
+
         .sidebar-title { font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: 1px; margin-bottom: 20px; margin-left: 15px; text-transform: uppercase;}
         .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; border-radius: 16px; color: var(--text-sub); cursor: pointer; font-weight: 600; font-size: 15px; margin-bottom: 5px; transition: all 0.2s ease;}
         .menu-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;}
@@ -22,19 +27,24 @@
         .search-bar { flex: 1; max-width: 500px; padding: 14px 24px; border-radius: 30px; border: 1px solid var(--border); background: white; outline: none; box-shadow: 0 2px 10px rgba(0,0,0,0.02);}
         .btn-add { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);}
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-        .card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
-        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .icon-placeholder { width: 48px; height: 48px; background: #f3f4f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); font-size: 20px;}
-        .card-title { font-size: 17px; font-weight: 700; color: var(--text-main); margin: 0;}
-        .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column;}
+        
+        /* Header của Card giờ là một link có thể click */
+        .card-link-wrapper { text-decoration: none; color: inherit; display: block; flex: 1; }
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; transition: 0.2s;}
+        .card-link-wrapper:hover .card-title { color: var(--primary); }
+        
+        .icon-placeholder { width: 48px; height: 48px; min-width: 48px; background: #f3f4f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); font-size: 20px;}
+        .card-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
         .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid #f3f4f6; padding-top: 15px;}
-        .tag { font-size: 11px; background: #f3f4f6; padding: 6px 10px; border-radius: 6px; color: var(--text-sub); font-weight: 600; text-transform: uppercase;}
+        .tag { font-size: 11px; background: #f3f4f6; padding: 6px 10px; border-radius: 6px; color: var(--text-sub); font-weight: 700; text-transform: uppercase;}
         .actions { display: flex; gap: 12px; }
-        .action-link { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; cursor: pointer;}
+        .action-link { color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer;}
         .action-edit { color: #f59e0b; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .action-del { color: #ef4444; cursor: pointer; font-size: 13px; font-weight: 600;}
+        .action-del { color: #ef4444; font-size: 13px; font-weight: 600; cursor: pointer;}
         
         /* Modal Form */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000;}
@@ -47,26 +57,32 @@
 </head>
 <body>
 
-    <!-- Sidebar cập nhật -->
+    <!-- Sidebar -->
     <div class="sidebar">
+        <!-- Sử dụng file logo.jpg cùng cấp với file index.html trên Github -->
+        <div class="logo">
+            <img src="logo.jpg" alt="Logo">
+        </div>
+        
         <div class="sidebar-title">DANH MỤC</div>
         
-        <div class="menu-item active">
+        <!-- Các menu được gán thêm hàm filterData để lọc nội dung -->
+        <div class="menu-item active" onclick="filterData('all', this)">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             Tất cả
         </div>
         
-        <div class="menu-item">
+        <div class="menu-item" onclick="filterData('Công việc', this)">
             <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
             Công việc
         </div>
         
-        <div class="menu-item">
+        <div class="menu-item" onclick="filterData('Trung tâm An Phúc', this)">
             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
             Trung tâm An Phúc
         </div>
         
-        <div class="menu-item">
+        <div class="menu-item" onclick="filterData('Công cụ Web', this)">
             <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
             Công cụ Web
         </div>
@@ -75,7 +91,8 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh tài liệu, công cụ AI, website...">
+            <!-- Thêm sự kiện onkeyup để tìm kiếm realtime -->
+            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh tài liệu, công cụ AI, website..." onkeyup="searchData(this.value)">
             <button class="btn-add" onclick="openAddModal()">+ THÊM MỚI</button>
         </div>
         <div class="grid" id="cardContainer">
@@ -104,11 +121,13 @@
     </div>
 
     <script>
+        // BẠN VẪN GIỮ NGUYÊN API CỦA BẠN Ở ĐÂY
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxiEixnqGUKtOtnZT35T0cKOClpRc2igbyhsyBhusoXj7HH7KJOuFJYHZuQKace-DwL/exec";
         const SECRET_COMMUNICATION_TOKEN = "ThayDuc_Authentication_Secret_Token_Long_String_2026"; 
         
         let globalDataList = [];
-        let editingId = null; // Biến lưu ID đang sửa, nếu null thì là Thêm mới
+        let currentCategoryFilter = 'all'; // Biến lưu trạng thái danh mục đang chọn
+        let editingId = null;
 
         document.addEventListener("DOMContentLoaded", loadData);
 
@@ -117,25 +136,73 @@
                 const response = await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: "getList" }) });
                 const result = await response.json();
                 if(result.status === "success") {
-                    globalDataList = result.data; // Lưu lại để dùng khi bấm nút Sửa
-                    renderCards(result.data);
+                    globalDataList = result.data; 
+                    applyFilters(); // Render dữ liệu sau khi tải xong
                 }
             } catch (e) { console.error("Load failed"); }
         }
 
+        // === LOGIC TÌM KIẾM & LỌC DANH MỤC ===
+        function filterData(category, element) {
+            currentCategoryFilter = category;
+            
+            // Xóa class 'active' ở tất cả menu và thêm vào menu vừa click
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            
+            applyFilters();
+        }
+
+        function searchData(keyword) {
+            applyFilters(keyword.toLowerCase());
+        }
+
+        function applyFilters(keyword = document.querySelector('.search-bar').value.toLowerCase()) {
+            let filtered = globalDataList;
+            
+            // Lọc theo danh mục
+            if (currentCategoryFilter !== 'all') {
+                filtered = filtered.filter(item => item.category === currentCategoryFilter);
+            }
+            
+            // Lọc theo từ khóa tìm kiếm (Tên hoặc Link)
+            if (keyword) {
+                filtered = filtered.filter(item => 
+                    item.name.toLowerCase().includes(keyword) || 
+                    item.link.toLowerCase().includes(keyword)
+                );
+            }
+            
+            renderCards(filtered);
+        }
+
+        // === RENDER GIAO DIỆN THẺ ===
         function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
+            
+            if (data.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280;">Không có trang web nào trong mục này.</p>';
+                return;
+            }
+
             data.forEach(item => {
+                // Hiển thị Account hoặc Link ở dòng phụ
+                let subText = item.account ? item.account : item.link.replace('https://', '');
+                
                 container.innerHTML += `
                     <div class="card">
-                        <div class="card-header">
-                            <div class="icon-placeholder">${item.name.charAt(0)}</div>
-                            <div>
-                                <h3 class="card-title">${item.name}</h3>
-                                <div class="card-sub">${item.link.replace('https://', '')}</div>
+                        <!-- THẺ A ĐỂ CLICK VÀO MỞ TRANG WEB -->
+                        <a href="${item.link}" target="_blank" class="card-link-wrapper">
+                            <div class="card-header">
+                                <div class="icon-placeholder">${item.name.charAt(0).toUpperCase()}</div>
+                                <div style="overflow: hidden; width: 100%;">
+                                    <h3 class="card-title" title="${item.name}">${item.name}</h3>
+                                    <div class="card-sub" title="${subText}">${subText}</div>
+                                </div>
                             </div>
-                        </div>
+                        </a>
+                        
                         <div class="card-footer">
                             <span class="tag">${item.category}</span>
                             <div class="actions">
@@ -150,7 +217,7 @@
             });
         }
 
-        // === LOGIC FORM (THÊM / SỬA) ===
+        // === LOGIC FORM (THÊM / SỬA / XÓA) ===
         function closeModal() { document.getElementById('formModal').style.display = 'none'; }
         
         function openAddModal() {
