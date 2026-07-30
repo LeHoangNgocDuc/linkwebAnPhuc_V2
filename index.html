@@ -5,93 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Link Hub - Bảo Mật Sinh Trắc Học</title>
     <style>
-        /* CSS GIỮ NGUYÊN NHƯ BẢN TRƯỚC (Bản có UI Dashboard đẹp) */
-        :root { --bg: #f8f9fa; --sidebar: #ffffff; --primary: #1a73e8; --text-main: #202124; --text-sub: #5f6368; --border: #dadce0; }
+        :root { --bg: #f4f7fc; --sidebar: #ffffff; --primary: #2563eb; --text-main: #1f2937; --text-sub: #4b5563; --border: #e5e7eb; }
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background-color: var(--bg); }
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column;}
-        .logo { font-size: 20px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; display: flex; align-items: center; gap: 10px;}
-        .menu-item { padding: 12px 15px; margin-bottom: 5px; border-radius: 8px; color: var(--text-sub); cursor: pointer; font-weight: 500;}
-        .menu-item.active { background: var(--primary); color: white; }
-        .main-content { flex: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto;}
+        
+        /* Sidebar cập nhật theo image_0ff3f3.png */
+        .sidebar { width: 280px; background: var(--sidebar); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid var(--border);}
+        .sidebar-title { font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: 1px; margin-bottom: 20px; margin-left: 15px; text-transform: uppercase;}
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; border-radius: 16px; color: var(--text-sub); cursor: pointer; font-weight: 600; font-size: 15px; margin-bottom: 5px; transition: all 0.2s ease;}
+        .menu-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;}
+        .menu-item:hover:not(.active) { background: #f3f4f6; }
+        .menu-item.active { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
+        
+        .main-content { flex: 1; display: flex; flex-direction: column; padding: 30px 50px; overflow-y: auto;}
         .header { display: flex; justify-content: space-between; margin-bottom: 30px; gap: 15px;}
-        .search-bar { flex: 1; max-width: 500px; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--border); background: white; outline: none;}
-        .btn-add { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 24px; font-weight: bold; cursor: pointer;}
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative;}
+        .search-bar { flex: 1; max-width: 500px; padding: 14px 24px; border-radius: 30px; border: 1px solid var(--border); background: white; outline: none; box-shadow: 0 2px 10px rgba(0,0,0,0.02);}
+        .btn-add { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);}
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+        .card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
         .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .icon-placeholder { width: 40px; height: 40px; background: #e8eaed; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;}
-        .card-title { font-size: 16px; font-weight: 600; color: var(--text-main); margin: 0;}
-        .card-sub { font-size: 12px; color: var(--text-sub); }
-        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #f1f3f4; padding-top: 15px;}
-        .tag { font-size: 11px; background: #f1f3f4; padding: 4px 8px; border-radius: 4px; color: var(--text-sub); font-weight: 600;}
-        .actions { display: flex; gap: 10px; }
+        .icon-placeholder { width: 48px; height: 48px; background: #f3f4f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); font-size: 20px;}
+        .card-title { font-size: 17px; font-weight: 700; color: var(--text-main); margin: 0;}
+        .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; }
+        
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid #f3f4f6; padding-top: 15px;}
+        .tag { font-size: 11px; background: #f3f4f6; padding: 6px 10px; border-radius: 6px; color: var(--text-sub); font-weight: 600; text-transform: uppercase;}
+        .actions { display: flex; gap: 12px; }
         .action-link { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; cursor: pointer;}
-        .action-del { color: #d93025; cursor: pointer; font-size: 13px; font-weight: 600;}
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;}
-        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 400px; display: flex; flex-direction: column; gap: 15px;}
-        .modal-content input, .modal-content select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; width: 100%;}
-        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;}
-        .pass-result { margin-top: 10px; padding: 10px; background: #e6f4ea; color: #137333; border-radius: 6px; font-family: monospace; display: none;}
+        .action-edit { color: #f59e0b; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .action-del { color: #ef4444; cursor: pointer; font-size: 13px; font-weight: 600;}
+        
+        /* Modal Form */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000;}
+        .modal-content { background: white; padding: 35px; border-radius: 20px; width: 420px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);}
+        .modal-content h3 { margin: 0 0 10px 0; color: var(--text-main); }
+        .modal-content input, .modal-content select { padding: 12px 15px; border: 1px solid var(--border); border-radius: 10px; width: 100%; font-size: 14px;}
+        .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;}
+        .pass-result { margin-top: 15px; padding: 12px; background: #ecfdf5; color: #059669; border-radius: 8px; font-family: monospace; display: none; font-size: 14px;}
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
+    <!-- Sidebar cập nhật -->
     <div class="sidebar">
-        <div class="logo">💙 Link Hub THĐ</div>
-        <div class="menu-item active">Tất cả</div>
-        <div class="menu-item">Trung tâm An Phúc</div>
-        <div class="menu-item">Công cụ Web</div>
+        <div class="sidebar-title">DANH MỤC</div>
+        
+        <div class="menu-item active">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Tất cả
+        </div>
+        
+        <div class="menu-item">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            Công việc
+        </div>
+        
+        <div class="menu-item">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            Trung tâm An Phúc
+        </div>
+        
+        <div class="menu-item">
+            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            Công cụ Web
+        </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <input type="text" class="search-bar" placeholder="Tìm kiếm trang web...">
-            <button class="btn-add" onclick="openModal()">+ THÊM MỚI</button>
+            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh tài liệu, công cụ AI, website...">
+            <button class="btn-add" onclick="openAddModal()">+ THÊM MỚI</button>
         </div>
         <div class="grid" id="cardContainer">
             <!-- Data load here -->
         </div>
     </div>
 
-    <!-- Modal Form (Giữ nguyên) -->
-    <div class="modal" id="addModal">
+    <!-- Modal Form (Dùng chung cho Thêm và Sửa) -->
+    <div class="modal" id="formModal">
         <div class="modal-content">
-            <h3>Thêm Trang Web</h3>
+            <h3 id="modalTitle">Thêm Trang Web</h3>
             <input type="text" id="wName" placeholder="Tên trang web">
             <input type="text" id="wLink" placeholder="https://...">
             <select id="wCategory">
-                <option value="CÔNG CỤ WEB">CÔNG CỤ WEB</option>
-                <option value="TRUNG TÂM AN PHÚC">TRUNG TÂM AN PHÚC</option>
+                <option value="Công việc">Công việc</option>
+                <option value="Trung tâm An Phúc">Trung tâm An Phúc</option>
+                <option value="Công cụ Web">Công cụ Web</option>
             </select>
             <input type="text" id="wAccount" placeholder="Tài khoản">
             <input type="password" id="wPass" placeholder="Mật khẩu">
             <div class="modal-buttons">
-                <button class="btn-add" style="background:#5f6368;" onclick="closeModal()">Hủy</button>
-                <button class="btn-add" onclick="saveData()">Lưu</button>
+                <button class="btn-add" style="background:#9ca3af; padding: 10px 20px;" onclick="closeModal()">Hủy</button>
+                <button class="btn-add" style="padding: 10px 20px;" onclick="saveData()">Lưu</button>
             </div>
         </div>
     </div>
 
     <script>
-        // === CẤU HÌNH API ===
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz_Snorri2UQdRDM6nlZ1ZXMN_0cRxFmUM56RdMkRBxF5wCsmwV6PMywIyATJ1pN7Cb/exec";
-        // MÃ TOKEN BÍ MẬT GIAO TIẾP (Phải khớp chính xác với Code.gs)
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxiEixnqGUKtOtnZT35T0cKOClpRc2igbyhsyBhusoXj7HH7KJOuFJYHZuQKace-DwL/exec";
         const SECRET_COMMUNICATION_TOKEN = "ThayDuc_Authentication_Secret_Token_Long_String_2026"; 
+        
+        let globalDataList = [];
+        let editingId = null; // Biến lưu ID đang sửa, nếu null thì là Thêm mới
 
         document.addEventListener("DOMContentLoaded", loadData);
 
-        // 1. Tải danh sách
         async function loadData() {
             try {
-                const response = await fetch(GAS_API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "getList" })
-                });
+                const response = await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: "getList" }) });
                 const result = await response.json();
-                if(result.status === "success") renderCards(result.data);
+                if(result.status === "success") {
+                    globalDataList = result.data; // Lưu lại để dùng khi bấm nút Sửa
+                    renderCards(result.data);
+                }
             } catch (e) { console.error("Load failed"); }
         }
 
@@ -111,8 +139,8 @@
                         <div class="card-footer">
                             <span class="tag">${item.category}</span>
                             <div class="actions">
-                                <a href="${item.link}" target="_blank" class="action-link">Truy cập</a>
                                 <span class="action-link" onclick="handleViewPass('${item.id}', this)">Xem Pass</span>
+                                <span class="action-edit" onclick="openEditModal('${item.id}')">Sửa</span>
                                 <span class="action-del" onclick="deleteWeb('${item.id}')">Xóa</span>
                             </div>
                         </div>
@@ -122,114 +150,110 @@
             });
         }
 
-        // === PHẦN CORE: BẢO MẬT SINH TRẮC HỌC (WEBAUTHN) ===
-
-        // Hàm 1: Gọi hộp thoại Face ID / Vân tay của thiết bị
-        async function triggerBiometricAuth() {
-            // Kiểm tra xem trình duyệt và thiết bị có hỗ trợ không
-            if (!window.PublicKeyCredential) {
-                alert("Thiết bị hoặc trình duyệt không hỗ trợ Face ID/Vân tay cục bộ.");
-                return false; 
-            }
-
-            // Tạo challenge ngẫu nhiên
-            const challenge = new Uint8Array(32);
-            window.crypto.getRandomValues(challenge);
-
-            // Cấu hình yêu cầu sinh trắc học
-            const publicKeyCredentialCreationOptions = {
-                challenge: challenge,
-                rp: { name: "Portal Link Hub", id: window.location.hostname },
-                user: {
-                    id: new Uint8Array(16),
-                    name: "thayduc@thd.edu.vn",
-                    displayName: "Xác thực Thầy Đức"
-                },
-                pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-                authenticatorSelection: {
-                    authenticatorAttachment: "platform", // BẮT BUỘC dùng sinh trắc học thiết bị (Face ID, Touch ID, Windows Hello)
-                    userVerification: "required" // Yêu cầu xác thực chủ sở hữu
-                },
-                timeout: 60000 // Chờ 60 giây
-            };
-
-            try {
-                // ĐÁNH THỨC HỆ THỐNG QUÉT SINH TRẮC HỌC CỦA THIẾT BỊ
-                await navigator.credentials.create({
-                    publicKey: publicKeyCredentialCreationOptions
-                });
-                return true; // Xác thực sinh trắc học cục bộ thành công
-            } catch (err) {
-                console.warn("Biometric failed or cancelled:", err);
-                // Bạn có thể hiện một ô nhập pass dự phòng ở đây nếu muốn, 
-                // nhưng để bảo mật tối đa, chỉ cho dùng Face ID.
-                return false; 
-            }
-        }
-
-        // Hàm 2: Xử lý sự kiện nhấn nút Xem Pass
-        async function handleViewPass(webId, btnElement) {
-            const passDisplay = document.getElementById(`pass-${webId}`);
-            
-            // 1. GỌI SINH TRẮC HỌC (Face ID / Vân tay)
-            passDisplay.style.display = "block";
-            passDisplay.innerText = "Đang chờ quét Face ID/Vân tay...";
-            
-            const isVerified = await triggerBiometricAuth();
-
-            if (!isVerified) {
-                passDisplay.innerText = "Xác thực thất bại.";
-                passDisplay.style.color = "#d93025";
-                passDisplay.style.backgroundColor = "#fce8e6";
-                return;
-            }
-
-            // 2. NẾU FACE ID ĐÚNG, GỬI TOKEN BÍ MẬT LÊN GAS LẤY PASS
-            passDisplay.innerText = "Đang lấy mật khẩu bảo mật...";
-            try {
-                const response = await fetch(GAS_API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: "getPass", 
-                        id: webId, 
-                        token: SECRET_COMMUNICATION_TOKEN // Gửi mã bí mật đi
-                    })
-                });
-                const result = await response.json();
-                
-                if (result.status === "success") {
-                    passDisplay.innerText = "Pass: " + result.pass;
-                    passDisplay.style.color = "#137333";
-                    passDisplay.style.backgroundColor = "#e6f4ea";
-                } else {
-                    passDisplay.innerText = "Lỗi bảo mật: " + result.message;
-                }
-            } catch (e) { passDisplay.innerText = "Lỗi mạng."; }
-        }
-
-        // CRUD functions (Giữ nguyên)
-        function openModal() { document.getElementById('addModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+        // === LOGIC FORM (THÊM / SỬA) ===
+        function closeModal() { document.getElementById('formModal').style.display = 'none'; }
         
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').innerText = "Thêm Trang Web";
+            document.getElementById('wName').value = "";
+            document.getElementById('wLink').value = "";
+            document.getElementById('wAccount').value = "";
+            document.getElementById('wPass').value = "";
+            document.getElementById('wPass').placeholder = "Mật khẩu";
+            document.getElementById('formModal').style.display = 'flex';
+        }
+
+        function openEditModal(id) {
+            editingId = id;
+            const item = globalDataList.find(x => x.id === id);
+            if(!item) return;
+
+            document.getElementById('modalTitle').innerText = "Sửa Thông Tin Web";
+            document.getElementById('wName').value = item.name;
+            document.getElementById('wLink').value = item.link;
+            document.getElementById('wCategory').value = item.category;
+            document.getElementById('wAccount').value = item.account;
+            document.getElementById('wPass').value = "";
+            document.getElementById('wPass').placeholder = "(Để trống nếu không đổi mật khẩu)";
+            document.getElementById('formModal').style.display = 'flex';
+        }
+
         async function saveData() {
             const payload = {
-                action: "add",
+                action: editingId ? "update" : "add",
+                id: editingId,
                 name: document.getElementById('wName').value,
                 link: document.getElementById('wLink').value,
                 category: document.getElementById('wCategory').value,
                 account: document.getElementById('wAccount').value,
                 password: document.getElementById('wPass').value
             };
-            document.querySelector('#addModal .btn-add:nth-child(2)').innerText = "Đang lưu...";
+            
+            const btn = document.querySelector('#formModal .btn-add:nth-child(2)');
+            btn.innerText = "Đang lưu...";
+            
             await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            closeModal(); loadData();
+            btn.innerText = "Lưu";
+            closeModal(); 
+            loadData();
         }
 
         async function deleteWeb(id) {
-            if(confirm("Bạn có chắc chắn muốn xóa?")) {
+            if(confirm("Bạn có chắc chắn muốn xóa website này?")) {
                 await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: id }) });
                 loadData();
             }
+        }
+
+        // === BẢO MẬT SINH TRẮC HỌC WEBAUTHN ===
+        async function triggerBiometricAuth() {
+            if (!window.PublicKeyCredential) return false; 
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+            try {
+                await navigator.credentials.create({
+                    publicKey: {
+                        challenge: challenge,
+                        rp: { name: "Portal Link Hub", id: window.location.hostname },
+                        user: { id: new Uint8Array(16), name: "admin", displayName: "Xác thực bảo mật" },
+                        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+                        timeout: 60000 
+                    }
+                });
+                return true;
+            } catch (err) { return false; }
+        }
+
+        async function handleViewPass(webId, btnElement) {
+            const passDisplay = document.getElementById(`pass-${webId}`);
+            passDisplay.style.display = "block";
+            passDisplay.innerText = "Đang chờ quét Face ID/Vân tay...";
+            
+            const isVerified = await triggerBiometricAuth();
+            if (!isVerified) {
+                passDisplay.innerText = "Xác thực thất bại.";
+                passDisplay.style.color = "#ef4444";
+                passDisplay.style.backgroundColor = "#fee2e2";
+                return;
+            }
+
+            passDisplay.innerText = "Đang lấy mật khẩu bảo mật...";
+            try {
+                const response = await fetch(GAS_API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "getPass", id: webId, token: SECRET_COMMUNICATION_TOKEN })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    passDisplay.innerText = "Pass: " + result.pass;
+                    passDisplay.style.color = "#059669";
+                    passDisplay.style.backgroundColor = "#ecfdf5";
+                } else {
+                    passDisplay.innerText = "Lỗi: " + result.message;
+                }
+            } catch (e) { passDisplay.innerText = "Lỗi mạng."; }
         }
     </script>
 </body>
