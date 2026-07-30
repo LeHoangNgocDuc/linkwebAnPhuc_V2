@@ -40,7 +40,8 @@
         .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; transition: 0.2s;}
         .card-link-wrapper:hover .card-title { color: var(--primary); }
         
-        .web-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 12px; object-fit: contain; background: #ffffff; padding: 4px; border: 1px solid #f3f4f6; box-shadow: 0 2px 5px rgba(0,0,0,0.04);}
+        /* Chỉnh sửa lại CSS cho Logo Web */
+        .web-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 12px; object-fit: contain; background: #ffffff; padding: 5px; border: 1px solid #f3f4f6; box-shadow: 0 2px 5px rgba(0,0,0,0.04);}
         
         .card-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -52,7 +53,7 @@
         .action-edit { color: #f59e0b; font-size: 13px; font-weight: 600; cursor: pointer; }
         .action-del { color: #ef4444; font-size: 13px; font-weight: 600; cursor: pointer;}
         
-        /* Modal Form (Đã sửa CSS để Select và Input giống hệt nhau) */
+        /* Modal Form */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000;}
         .modal-content { background: white; padding: 35px; border-radius: 20px; width: 420px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);}
         .modal-content h3 { margin: 0 0 10px 0; color: var(--text-main); }
@@ -83,17 +84,14 @@
         </div>
     </div>
 
-    <!-- Modal Form Cải Tiến -->
+    <!-- Modal Form -->
     <div class="modal" id="formModal">
         <div class="modal-content">
             <h3 id="modalTitle">Thêm Trang Web</h3>
             <input type="text" id="wName" placeholder="Tên trang web">
             <input type="text" id="wLink" placeholder="https://...">
             
-            <!-- Cải tiến 1: Dropdown kết hợp Input ẩn -->
-            <select id="wCategorySelect" onchange="toggleCategoryInput()">
-                <!-- JS sẽ tự động điền các tag vào đây -->
-            </select>
+            <select id="wCategorySelect" onchange="toggleCategoryInput()"></select>
             <input type="text" id="wCategoryInput" placeholder="Nhập tên danh mục mới..." style="display:none;">
 
             <input type="text" id="wAccount" placeholder="Tài khoản">
@@ -106,7 +104,7 @@
     </div>
 
     <script>
-        // === CẤU HÌNH API CỦA THẦY Ở ĐÂY ===
+        // === CẤU HÌNH API CỦA BẠN ===
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxiEixnqGUKtOtnZT35T0cKOClpRc2igbyhsyBhusoXj7HH7KJOuFJYHZuQKace-DwL/exec";
         const SECRET_COMMUNICATION_TOKEN = "ThayDuc_Authentication_Secret_Token_Long_String_2026"; 
         
@@ -128,7 +126,7 @@
             } catch (e) { console.error("Lỗi tải dữ liệu"); }
         }
 
-        // === TỰ ĐỘNG TẠO MENU ===
+        // === THUẬT TOÁN TẠO MENU ===
         function renderSidebar() {
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
@@ -162,7 +160,7 @@
             });
         }
 
-        // Tự động load danh sách Select khi mở Modal
+        // Tự động load danh sách Tag khi ấn Thêm/Sửa
         function updateCategorySelect() {
             const select = document.getElementById('wCategorySelect');
             select.innerHTML = '';
@@ -177,14 +175,12 @@
                 select.appendChild(option);
             });
             
-            // Bổ sung nút tạo mới
             const newOption = document.createElement('option');
             newOption.value = "__NEW__";
             newOption.innerText = "➕ Thêm tag mới...";
             select.appendChild(newOption);
         }
 
-        // Ẩn/Hiện Input nhập Tag mới
         function toggleCategoryInput() {
             const select = document.getElementById('wCategorySelect');
             const input = document.getElementById('wCategoryInput');
@@ -208,6 +204,66 @@
                 filtered = filtered.filter(item => item.category === currentCategoryFilter);
             }
             renderCards(filtered);
+        }
+
+        // === THUẬT TOÁN TẠO ICON THÔNG MINH CHO CÁC TRANG GIÁO DỤC ===
+        function generateIconHtml(link, name) {
+            let domain = "";
+            try { 
+                let parseUrl = link.startsWith('http') ? link : 'https://' + link;
+                domain = new URL(parseUrl).hostname.toLowerCase(); 
+            } catch(e) {}
+
+            let iconUrl = "";
+            let linkStr = link.toLowerCase();
+            let nameStr = name.toLowerCase();
+
+            // Nhận diện đặc biệt các trang web giáo dục/code phổ biến
+            if (domain.includes("vnedu.vn") || nameStr.includes("vnedu")) {
+                iconUrl = "https://www.google.com/s2/favicons?domain=vnedu.vn&sz=128";
+            } 
+            else if (domain.includes("vercel") || nameStr.includes("vercel")) {
+                iconUrl = "https://assets.vercel.com/image/upload/q_auto/front/favicon/vercel/180x180.png";
+            } 
+            else if (domain.includes("temis") || domain.includes("csdl") || nameStr.includes("temis")) {
+                iconUrl = "https://www.google.com/s2/favicons?domain=csdl.edu.vn&sz=128";
+            } 
+            else if (domain.includes("truong.edu.vn")) {
+                iconUrl = "https://www.google.com/s2/favicons?domain=truong.edu.vn&sz=128";
+            } 
+            else if (domain.includes("anphuc") || nameStr.includes("an phúc")) {
+                iconUrl = "logo.jpg";
+            } 
+            else if (domain.includes("github.com") || nameStr.includes("github")) {
+                iconUrl = "https://www.google.com/s2/favicons?domain=github.com&sz=128";
+            } 
+            else if (domain.includes("mail.google.com") || domain.includes("gmail") || nameStr.includes("mail")) {
+                iconUrl = "https://www.google.com/s2/favicons?domain=mail.google.com&sz=128";
+            }
+            else if (domain !== "") {
+                // Thuật toán bóc tách lấy tên miền gốc cho các trang khác
+                let parts = domain.split('.');
+                if (parts.length > 2) {
+                    if (domain.endsWith(".edu.vn") || domain.endsWith(".gov.vn") || domain.endsWith(".com.vn") || domain.endsWith(".net.vn")) {
+                        domain = parts.slice(-3).join('.');
+                    } else {
+                        domain = parts.slice(-2).join('.');
+                    }
+                }
+                iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+            }
+
+            // Fallback: Chữ cái đầu tiên rất đẹp (Dùng khi không có Logo hoặc lỗi)
+            let letter = name.charAt(0).toUpperCase();
+            let fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(letter)}&background=f3f4f6&color=2563eb&size=128&font-size=0.55&bold=true`;
+            
+            // Nếu không xác định được link, trả thẳng về chữ cái
+            if (iconUrl === "") {
+                return `<img src="${fallbackUrl}" class="web-icon" alt="icon">`;
+            }
+            
+            // Nếu có link, thử tải ảnh. Nếu tải ảnh bị lỗi sẽ tự đổi sang chữ cái
+            return `<img src="${iconUrl}" class="web-icon" alt="icon" onerror="this.onerror=null; this.src='${fallbackUrl}';">`;
         }
 
         // === RENDER THẺ WEB VÀ LOGO ===
@@ -241,29 +297,14 @@
                 groupedData[category].forEach(item => {
                     let subText = item.account ? item.account : item.link.replace('https://', '');
                     
-                    // Lọc Tên Miền
-                    let domain = "";
-                    try { domain = new URL(item.link).hostname; } 
-                    catch(e) { domain = item.link; }
-                    
-                    // Cải tiến 2: Ép tên miền về máy chủ gốc cho các trang giáo dục VN
-                    if (domain.includes("vnedu.vn")) domain = "vnedu.vn";
-                    if (domain.includes("truong.edu.vn")) domain = "truong.edu.vn";
-                    if (domain.includes("khanhhoa.edu.vn")) domain = "khanhhoa.edu.vn";
-                    if (domain.includes("edu.vn") && domain.split('.').length > 3) {
-                         // Xử lý các subdomain edu.vn khác
-                         let parts = domain.split('.');
-                         domain = parts.slice(-3).join('.');
-                    }
+                    // Gọi hàm tạo Icon thông minh
+                    let iconHtml = generateIconHtml(item.link, item.name);
 
-                    // Gọi ảnh logo gốc từ Google (Độ phân giải 128px)
-                    let iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-                    
                     grid.innerHTML += `
                         <div class="card">
                             <a href="${item.link}" target="_blank" class="card-link-wrapper">
                                 <div class="card-header">
-                                    <img src="${iconUrl}" class="web-icon" alt="icon" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name.charAt(0))}&background=random&color=fff&size=128';">
+                                    ${iconHtml}
                                     <div style="overflow: hidden; width: 100%;">
                                         <h3 class="card-title" title="${item.name}">${item.name}</h3>
                                         <div class="card-sub" title="${subText}">${subText}</div>
@@ -297,7 +338,7 @@
             document.getElementById('wLink').value = "";
             
             updateCategorySelect();
-            document.getElementById('wCategorySelect').value = "Công việc"; // Default
+            document.getElementById('wCategorySelect').value = "Công việc"; 
             document.getElementById('wCategoryInput').style.display = "none";
             document.getElementById('wCategoryInput').value = "";
             
@@ -320,7 +361,6 @@
             const select = document.getElementById('wCategorySelect');
             const input = document.getElementById('wCategoryInput');
             
-            // Xử lý nạp Tag hiện tại vào Select
             let exists = Array.from(select.options).some(opt => opt.value === item.category);
             if (exists) {
                 select.value = item.category;
