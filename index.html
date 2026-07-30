@@ -3,176 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Quản Trị</title>
+    <title>Link Hub - Quản Trị</title>
+    <!-- Tải thư viện Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
-            --bg-color: #f0f4f8;
-            --glass-bg: rgba(255, 255, 255, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --text-main: #2c3e50;
-            --accent: #3498db;
+            --bg: #f8f9fa; --sidebar: #ffffff; --primary: #1a73e8; 
+            --text-main: #202124; --text-sub: #5f6368; --border: #dadce0;
         }
-        body {
-            margin: 0; padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
-            min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .header-title {
-            color: white; font-size: 28px; font-weight: bold; margin-bottom: 30px;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
-        }
-        .container {
-            width: 100%; max-width: 800px;
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
-        }
-        .card:hover { transform: translateY(-5px); }
-        .web-name { font-size: 20px; font-weight: bold; color: var(--text-main); margin: 0 0 10px 0; }
-        .web-account { font-size: 14px; color: #555; margin-bottom: 15px; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn {
-            flex: 1; padding: 10px; border: none; border-radius: 8px;
-            cursor: pointer; font-weight: bold; font-size: 14px;
-            transition: 0.3s;
-        }
-        .btn-visit { background-color: var(--text-main); color: white; text-decoration: none; text-align: center; }
-        .btn-visit:hover { background-color: #1a252f; }
-        .btn-pass { background-color: var(--accent); color: white; }
-        .btn-pass:hover { background-color: #2980b9; }
-        .pass-display {
-            margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.8);
-            border-radius: 8px; text-align: center; font-family: monospace;
-            font-size: 16px; display: none; color: #d35400; font-weight: bold;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; display: flex; height: 100vh; background-color: var(--bg); }
+        
+        /* Bố cục Sidebar & Main giống image_107719.jpg */
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column;}
+        .logo { font-size: 20px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; display: flex; align-items: center; gap: 10px;}
+        .menu-item { padding: 12px 15px; margin-bottom: 5px; border-radius: 8px; color: var(--text-sub); cursor: pointer; font-weight: 500;}
+        .menu-item.active { background: var(--primary); color: white; }
+        
+        .main-content { flex: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto;}
+        .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .search-bar { flex: 1; max-width: 500px; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--border); background: white; outline: none;}
+        .btn-add { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 24px; font-weight: bold; cursor: pointer;}
+        
+        /* Cấu trúc Card */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative;}
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .icon-placeholder { width: 40px; height: 40px; background: #e8eaed; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;}
+        .card-title { font-size: 16px; font-weight: 600; color: var(--text-main); margin: 0;}
+        .card-sub { font-size: 12px; color: var(--text-sub); }
+        
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #f1f3f4; padding-top: 15px;}
+        .tag { font-size: 11px; background: #f1f3f4; padding: 4px 8px; border-radius: 4px; color: var(--text-sub); font-weight: 600;}
+        .actions { display: flex; gap: 10px; }
+        .action-link { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; cursor: pointer;}
+        .action-del { color: #d93025; cursor: pointer; font-size: 13px; font-weight: 600;}
+        
+        /* Modal Form */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;}
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 400px; display: flex; flex-direction: column; gap: 15px;}
+        .modal-content input, .modal-content select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; width: 100%;}
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;}
+        .pass-result { margin-top: 10px; padding: 10px; background: #e6f4ea; color: #137333; border-radius: 6px; font-family: monospace; display: none;}
     </style>
 </head>
 <body>
 
-    <div class="header-title">Hệ Thống Quản Trị - Thầy Đức</div>
-    <div class="container" id="webList">
-        <!-- Dữ liệu sẽ được load vào đây -->
-        <p style="color: white; text-align: center; width: 100%;">Đang tải dữ liệu...</p>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">💙 Link Hub</div>
+        <div class="menu-item active">Tất cả</div>
+        <div class="menu-item">Công việc</div>
+        <div class="menu-item">Trung tâm An Phúc</div>
+        <div class="menu-item">Công cụ Web</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh tài liệu, công cụ AI, website...">
+            <button class="btn-add" onclick="openModal()">+ THÊM MỚI</button>
+        </div>
+        <div class="grid" id="cardContainer">
+            <!-- Thẻ web sẽ được render bằng JS -->
+        </div>
+    </div>
+
+    <!-- Modal Thêm Mới -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <h3>Thêm Trang Web</h3>
+            <input type="text" id="wName" placeholder="Tên trang web (VD: Vercel)">
+            <input type="text" id="wLink" placeholder="Link (VD: https://vercel.com)">
+            <select id="wCategory">
+                <option value="CÔNG CỤ WEB">CÔNG CỤ WEB</option>
+                <option value="TRUNG TÂM AN PHÚC">TRUNG TÂM AN PHÚC</option>
+            </select>
+            <input type="text" id="wAccount" placeholder="Tài khoản đăng nhập">
+            <input type="password" id="wPass" placeholder="Mật khẩu">
+            <div class="modal-buttons">
+                <button class="btn-add" style="background:#5f6368;" onclick="closeModal()">Hủy</button>
+                <button class="btn-add" onclick="saveData()">Lưu</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // === CẤU HÌNH API ===
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzubzVpA9WcuuG5ZZB8ZNUGJxhFHwJvHlBH3rJotMYd-UWUngXua7IitAiNBpV_5Lfq/exec";
-        const SECRET_TOKEN = "ThayDuc_THCSTranHungDao_2026"; 
+        // === CẤU HÌNH ===
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyHDvy1sMQe_P674oeRwpwxj0kxJOhbYbOhIuxFMqSOLvh-EKc9NtdbXuUuOVgJiuI8/exec";
+        const GOOGLE_CLIENT_ID = "DÁN_CLIENT_ID_CỦA_BẠN.apps.googleusercontent.com"; 
 
-        // Khởi chạy khi load trang
-        document.addEventListener("DOMContentLoaded", loadWebsites);
+        let currentWebIdToGetPass = null;
 
-        async function loadWebsites() {
+        document.addEventListener("DOMContentLoaded", () => {
+            loadData();
+            // Khởi tạo Google Identity Services
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleCredentialResponse,
+                cancel_on_tap_outside: true
+            });
+        });
+
+        // 1. Tải danh sách
+        async function loadData() {
+            document.getElementById('cardContainer').innerHTML = "<p>Đang tải dữ liệu...</p>";
             try {
-                const response = await fetch(`${GAS_API_URL}?action=getList`);
+                const response = await fetch(GAS_API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "getList" })
+                });
                 const result = await response.json();
-                
-                if(result.status === "success") {
-                    renderCards(result.data);
-                } else {
-                    alert("Lỗi tải dữ liệu: " + result.message);
-                }
-            } catch (error) {
-                console.error("Fetch error:", error);
-                document.getElementById('webList').innerHTML = "<p style='color: white;'>Lỗi kết nối máy chủ.</p>";
+                if(result.status === "success") renderCards(result.data);
+            } catch (e) {
+                document.getElementById('cardContainer').innerHTML = "<p>Lỗi kết nối.</p>";
             }
         }
 
         function renderCards(data) {
-            const container = document.getElementById('webList');
+            const container = document.getElementById('cardContainer');
             container.innerHTML = '';
-            
             data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <h3 class="web-name">${item.name}</h3>
-                    <div class="web-account">Tài khoản: <strong>${item.account}</strong></div>
-                    <div class="btn-group">
-                        <a href="${item.link}" target="_blank" class="btn btn-visit">Truy cập</a>
-                        <button class="btn btn-pass" onclick="requestPassword('${item.id}', this)">Xem Pass</button>
+                container.innerHTML += `
+                    <div class="card" id="card-${item.id}">
+                        <div class="card-header">
+                            <div class="icon-placeholder">${item.name.charAt(0)}</div>
+                            <div>
+                                <h3 class="card-title">${item.name}</h3>
+                                <div class="card-sub">${item.link.replace('https://', '')}</div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="tag">${item.category}</span>
+                            <div class="actions">
+                                <a href="${item.link}" target="_blank" class="action-link">Truy cập</a>
+                                <span class="action-link" onclick="triggerGoogleLogin('${item.id}')">Xem Pass</span>
+                                <span class="action-del" onclick="deleteWeb('${item.id}')">Xóa</span>
+                            </div>
+                        </div>
+                        <div class="pass-result" id="pass-${item.id}"></div>
                     </div>
-                    <div class="pass-display" id="pass-${item.id}"></div>
                 `;
-                container.appendChild(card);
             });
         }
 
-        // Kích hoạt Face ID / Touch ID (WebAuthn)
-        async function triggerFaceID() {
-            if (!window.PublicKeyCredential) {
-                alert("Thiết bị hoặc trình duyệt không hỗ trợ Face ID/Vân tay.");
-                return false;
-            }
+        // 2. Thêm mới dữ liệu
+        function openModal() { document.getElementById('addModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+        
+        async function saveData() {
+            const payload = {
+                action: "add",
+                name: document.getElementById('wName').value,
+                link: document.getElementById('wLink').value,
+                category: document.getElementById('wCategory').value,
+                account: document.getElementById('wAccount').value,
+                password: document.getElementById('wPass').value
+            };
+            
+            document.querySelector('#addModal .btn-add:nth-child(2)').innerText = "Đang lưu...";
+            await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            closeModal();
+            loadData(); // Tải lại danh sách
+        }
 
-            const challenge = new Uint8Array(32);
-            window.crypto.getRandomValues(challenge);
-
-            try {
-                // Yêu cầu xác thực sinh trắc học cục bộ
-                await navigator.credentials.create({
-                    publicKey: {
-                        challenge: challenge,
-                        rp: { name: "Portal Quản Trị", id: window.location.hostname },
-                        user: {
-                            id: new Uint8Array(16),
-                            name: "admin",
-                            displayName: "Xác thực bảo mật"
-                        },
-                        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-                        authenticatorSelection: {
-                            authenticatorAttachment: "platform", // Ép dùng Face ID/Vân tay
-                            userVerification: "required"
-                        },
-                        timeout: 60000
-                    }
-                });
-                return true; // Xác thực sinh trắc học thành công
-            } catch (error) {
-                console.warn("Face ID failed/cancelled:", error);
-                return false;
+        // 3. Xóa dữ liệu
+        async function deleteWeb(id) {
+            if(confirm("Bạn có chắc chắn muốn xóa?")) {
+                await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: id }) });
+                loadData();
             }
         }
 
-        async function requestPassword(id, btnElement) {
-            // 1. Gọi Face ID / Touch ID
-            const isVerified = await triggerFaceID();
-            
-            if (!isVerified) {
-                alert("Xác thực khuôn mặt thất bại. Không thể hiển thị mật khẩu.");
-                return;
-            }
+        // 4. Kích hoạt Đăng nhập Google để xem Pass
+        function triggerGoogleLogin(webId) {
+            currentWebIdToGetPass = webId;
+            // Hiển thị hộp thoại Google One Tap (hoặc popup đăng nhập)
+            google.accounts.id.prompt();
+        }
 
-            // 2. Nếu khuôn mặt đúng, gọi API lấy Pass
-            const passDisplay = document.getElementById(`pass-${id}`);
-            btnElement.innerText = "Đang lấy...";
-            
+        // 5. Xử lý sau khi Google xác thực thành công
+        async function handleCredentialResponse(response) {
+            const token = response.credential;
+            const passDisplay = document.getElementById(`pass-${currentWebIdToGetPass}`);
+            passDisplay.style.display = "block";
+            passDisplay.innerText = "Đang xác thực bảo mật...";
+
             try {
-                const response = await fetch(`${GAS_API_URL}?action=getPass&id=${id}&token=${SECRET_TOKEN}`);
-                const result = await response.json();
+                const res = await fetch(GAS_API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "getPass", id: currentWebIdToGetPass, token: token })
+                });
+                const result = await res.json();
                 
-                if(result.status === "success") {
-                    passDisplay.innerText = result.pass;
-                    passDisplay.style.display = "block";
-                    btnElement.style.display = "none"; // Ẩn nút xem pass sau khi hiện
+                if (result.status === "success") {
+                    passDisplay.innerText = "Pass: " + result.pass;
                 } else {
-                    alert("Lỗi: " + result.message);
+                    passDisplay.innerText = "Lỗi: " + result.message;
+                    passDisplay.style.color = "#d93025";
+                    passDisplay.style.backgroundColor = "#fce8e6";
                 }
-            } catch (error) {
-                alert("Lỗi kết nối khi lấy mật khẩu.");
+            } catch (e) {
+                passDisplay.innerText = "Lỗi mạng.";
             }
-            
-            btnElement.innerText = "Xem Pass";
         }
     </script>
 </body>
