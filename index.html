@@ -12,7 +12,6 @@
         /* Sidebar */
         .sidebar { width: 280px; background: var(--sidebar); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid var(--border);}
         
-        /* Logo Mới: To hơn, cân đối và có chữ LINK WEB */
         .logo-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 35px; gap: 12px; }
         .logo-container img { width: 95px; height: 95px; object-fit: contain; border-radius: 12px; }
         .logo-text { font-size: 18px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; }
@@ -25,7 +24,6 @@
         
         .main-content { flex: 1; display: flex; flex-direction: column; padding: 30px 50px; overflow-y: auto;}
         
-        /* Đã xóa search-bar, đẩy nút thêm mới sang góc phải */
         .header { display: flex; justify-content: flex-end; margin-bottom: 30px;}
         .btn-add { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); transition: 0.2s;}
         .btn-add:hover { background: #1d4ed8; }
@@ -41,11 +39,10 @@
         .card-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        /* Chỉnh sửa Footer để Tag không ép các nút xuống dòng */
         .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; border-top: 1px solid #f3f4f6; padding-top: 15px; gap: 10px;}
         .tag { font-size: 10px; background: #f3f4f6; padding: 6px 10px; border-radius: 6px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;}
-        .actions { display: flex; gap: 12px; flex-shrink: 0; } /* flex-shrink: 0 giúp nút không bao giờ bị bóp méo */
-        .action-link { color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer;}
+        .actions { display: flex; gap: 12px; flex-shrink: 0; } 
+        .action-link { color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;}
         .action-edit { color: #f59e0b; font-size: 13px; font-weight: 600; cursor: pointer; }
         .action-del { color: #ef4444; font-size: 13px; font-weight: 600; cursor: pointer;}
         
@@ -55,16 +52,15 @@
         .modal-content h3 { margin: 0 0 10px 0; color: var(--text-main); }
         .modal-content input, .modal-content select { padding: 12px 15px; border: 1px solid var(--border); border-radius: 10px; width: 100%; font-size: 14px;}
         .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;}
-        .pass-result { margin-top: 15px; padding: 12px; background: #ecfdf5; color: #059669; border-radius: 8px; font-family: monospace; display: none; font-size: 14px;}
+        .pass-result { margin-top: 15px; padding: 12px; background: #ecfdf5; color: #059669; border-radius: 8px; font-family: monospace; display: none; font-size: 14px; word-break: break-all;}
     </style>
 </head>
 <body>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Logo đã được căn chỉnh lớn hơn và thêm Text -->
         <div class="logo-container">
-            <img src="logo.jpg" alt="Logo An Phúc">
+            <img src="logo.jpg" alt="Logo">
             <div class="logo-text">LINK WEB</div>
         </div>
         
@@ -89,12 +85,17 @@
             <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
             Công cụ Web
         </div>
+
+        <!-- Đã bổ sung danh mục Cá nhân -->
+        <div class="menu-item" onclick="filterData('Cá nhân', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            Cá nhân
+        </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <!-- Đã bỏ thanh tìm kiếm -->
             <button class="btn-add" onclick="openAddModal()">+ THÊM MỚI</button>
         </div>
         <div class="grid" id="cardContainer">
@@ -102,7 +103,7 @@
         </div>
     </div>
 
-    <!-- Modal Form (Dùng chung cho Thêm và Sửa) -->
+    <!-- Modal Form -->
     <div class="modal" id="formModal">
         <div class="modal-content">
             <h3 id="modalTitle">Thêm Trang Web</h3>
@@ -112,6 +113,8 @@
                 <option value="Công việc">Công việc</option>
                 <option value="Trung tâm An Phúc">Trung tâm An Phúc</option>
                 <option value="Công cụ Web">Công cụ Web</option>
+                <!-- Bổ sung vào form chọn -->
+                <option value="Cá nhân">Cá nhân</option>
             </select>
             <input type="text" id="wAccount" placeholder="Tài khoản">
             <input type="password" id="wPass" placeholder="Mật khẩu">
@@ -123,7 +126,7 @@
     </div>
 
     <script>
-        // === CẤU HÌNH API CỦA BẠN ===
+        // === CẤU HÌNH API ===
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxiEixnqGUKtOtnZT35T0cKOClpRc2igbyhsyBhusoXj7HH7KJOuFJYHZuQKace-DwL/exec";
         const SECRET_COMMUNICATION_TOKEN = "ThayDuc_Authentication_Secret_Token_Long_String_2026"; 
         
@@ -144,23 +147,19 @@
             } catch (e) { console.error("Lỗi tải dữ liệu"); }
         }
 
-        // === LOGIC LỌC DANH MỤC (ĐÃ SỬA LẠI SAU KHI BỎ TÌM KIẾM) ===
+        // === LOGIC LỌC DANH MỤC ===
         function filterData(category, element) {
             currentCategoryFilter = category;
-            
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
-            
             applyFilters();
         }
 
         function applyFilters() {
             let filtered = globalDataList;
-            
             if (currentCategoryFilter !== 'all') {
                 filtered = filtered.filter(item => item.category === currentCategoryFilter);
             }
-            
             renderCards(filtered);
         }
 
@@ -282,9 +281,11 @@
         async function handleViewPass(webId, btnElement) {
             const passDisplay = document.getElementById(`pass-${webId}`);
             
-            // Xóa pass cũ nếu đang hiển thị
-            if (passDisplay.style.display === "block" && passDisplay.innerText.includes("Pass:")) {
+            // Xử lý nút Ẩn Pass: Nếu đang hiện chữ Ẩn Pass thì đóng lại
+            if (btnElement.innerText === "Ẩn Pass") {
                 passDisplay.style.display = "none";
+                btnElement.innerText = "Xem Pass";
+                btnElement.style.color = "var(--primary)"; // Trả lại màu xanh ban đầu
                 return;
             }
 
@@ -297,7 +298,6 @@
                 passDisplay.style.color = "#ef4444";
                 passDisplay.style.backgroundColor = "#fee2e2";
                 
-                // Tự ẩn thông báo lỗi sau 3 giây
                 setTimeout(() => { passDisplay.style.display = "none"; }, 3000);
                 return;
             }
@@ -309,10 +309,15 @@
                     body: JSON.stringify({ action: "getPass", id: webId, token: SECRET_COMMUNICATION_TOKEN })
                 });
                 const result = await response.json();
+                
                 if (result.status === "success") {
                     passDisplay.innerText = "Pass: " + result.pass;
                     passDisplay.style.color = "#059669";
                     passDisplay.style.backgroundColor = "#ecfdf5";
+                    
+                    // Chuyển nút thành Ẩn Pass (màu đỏ để dễ nhận biết)
+                    btnElement.innerText = "Ẩn Pass";
+                    btnElement.style.color = "#ef4444"; 
                 } else {
                     passDisplay.innerText = "Lỗi: " + result.message;
                 }
