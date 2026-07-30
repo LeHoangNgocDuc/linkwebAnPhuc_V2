@@ -40,8 +40,7 @@
         .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; transition: 0.2s;}
         .card-link-wrapper:hover .card-title { color: var(--primary); }
         
-        /* Chỉnh sửa lại CSS cho Logo Web */
-        .web-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 12px; object-fit: contain; background: #ffffff; padding: 5px; border: 1px solid #f3f4f6; box-shadow: 0 2px 5px rgba(0,0,0,0.04);}
+        .web-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 12px; object-fit: cover; background: #ffffff; padding: 2px; border: 1px solid #f3f4f6; box-shadow: 0 2px 5px rgba(0,0,0,0.04);}
         
         .card-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -104,7 +103,7 @@
     </div>
 
     <script>
-        // === CẤU HÌNH API CỦA BẠN ===
+        // === CẤU HÌNH API CỦA THẦY ===
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxiEixnqGUKtOtnZT35T0cKOClpRc2igbyhsyBhusoXj7HH7KJOuFJYHZuQKace-DwL/exec";
         const SECRET_COMMUNICATION_TOKEN = "ThayDuc_Authentication_Secret_Token_Long_String_2026"; 
         
@@ -160,7 +159,6 @@
             });
         }
 
-        // Tự động load danh sách Tag khi ấn Thêm/Sửa
         function updateCategorySelect() {
             const select = document.getElementById('wCategorySelect');
             select.innerHTML = '';
@@ -206,7 +204,7 @@
             renderCards(filtered);
         }
 
-        // === THUẬT TOÁN TẠO ICON THÔNG MINH CHO CÁC TRANG GIÁO DỤC ===
+        // === THUẬT TOÁN ĐỔI LOGO (LOẠI BỎ HOÀN TOÀN QUẢ CẦU MỜ) ===
         function generateIconHtml(link, name) {
             let domain = "";
             try { 
@@ -217,56 +215,44 @@
             let iconUrl = "";
             let linkStr = link.toLowerCase();
             let nameStr = name.toLowerCase();
-
-            // Nhận diện đặc biệt các trang web giáo dục/code phổ biến
+            
+            // Xử lý cứng các trang web hay hiển thị lỗi
             if (domain.includes("vnedu.vn") || nameStr.includes("vnedu")) {
-                iconUrl = "https://www.google.com/s2/favicons?domain=vnedu.vn&sz=128";
-            } 
-            else if (domain.includes("vercel") || nameStr.includes("vercel")) {
-                iconUrl = "https://assets.vercel.com/image/upload/q_auto/front/favicon/vercel/180x180.png";
+                // Tạo ảnh chữ V với viền xanh nhạt, chữ xanh đậm chuyên nghiệp
+                iconUrl = "https://ui-avatars.com/api/?name=V&background=e0f2fe&color=0284c7&size=128&font-size=0.65&bold=true";
             } 
             else if (domain.includes("temis") || domain.includes("csdl") || nameStr.includes("temis")) {
-                iconUrl = "https://www.google.com/s2/favicons?domain=csdl.edu.vn&sz=128";
-            } 
-            else if (domain.includes("truong.edu.vn")) {
-                iconUrl = "https://www.google.com/s2/favicons?domain=truong.edu.vn&sz=128";
+                // Tạo ảnh chữ T với viền hồng nhạt, chữ hồng đậm
+                iconUrl = "https://ui-avatars.com/api/?name=T&background=fce7f3&color=be185d&size=128&font-size=0.65&bold=true";
+            }
+            else if (domain.includes("vercel") || nameStr.includes("vercel")) {
+                iconUrl = "https://assets.vercel.com/image/upload/q_auto/front/favicon/vercel/180x180.png";
             } 
             else if (domain.includes("anphuc") || nameStr.includes("an phúc")) {
                 iconUrl = "logo.jpg";
             } 
             else if (domain.includes("github.com") || nameStr.includes("github")) {
-                iconUrl = "https://www.google.com/s2/favicons?domain=github.com&sz=128";
+                iconUrl = "https://github.githubassets.com/favicons/favicon.png";
             } 
             else if (domain.includes("mail.google.com") || domain.includes("gmail") || nameStr.includes("mail")) {
-                iconUrl = "https://www.google.com/s2/favicons?domain=mail.google.com&sz=128";
+                iconUrl = "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico";
             }
             else if (domain !== "") {
-                // Thuật toán bóc tách lấy tên miền gốc cho các trang khác
-                let parts = domain.split('.');
-                if (parts.length > 2) {
-                    if (domain.endsWith(".edu.vn") || domain.endsWith(".gov.vn") || domain.endsWith(".com.vn") || domain.endsWith(".net.vn")) {
-                        domain = parts.slice(-3).join('.');
-                    } else {
-                        domain = parts.slice(-2).join('.');
-                    }
-                }
-                iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                // Dùng icon.horse tốt hơn Google rất nhiều, không bao giờ ra quả cầu mờ
+                iconUrl = `https://icon.horse/icon/${domain}`;
             }
 
-            // Fallback: Chữ cái đầu tiên rất đẹp (Dùng khi không có Logo hoặc lỗi)
+            // Fallback nếu web lạ hoàn toàn: Lấy chữ cái đầu tiên của tên web
             let letter = name.charAt(0).toUpperCase();
-            let fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(letter)}&background=f3f4f6&color=2563eb&size=128&font-size=0.55&bold=true`;
+            let fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(letter)}&background=f3f4f6&color=2563eb&size=128&font-size=0.6&bold=true`;
             
-            // Nếu không xác định được link, trả thẳng về chữ cái
-            if (iconUrl === "") {
-                return `<img src="${fallbackUrl}" class="web-icon" alt="icon">`;
-            }
-            
-            // Nếu có link, thử tải ảnh. Nếu tải ảnh bị lỗi sẽ tự đổi sang chữ cái
+            if (iconUrl === "") iconUrl = fallbackUrl;
+
+            // Nếu tải iconUrl bị lỗi (404), nó sẽ tự động fallback về chữ cái
             return `<img src="${iconUrl}" class="web-icon" alt="icon" onerror="this.onerror=null; this.src='${fallbackUrl}';">`;
         }
 
-        // === RENDER THẺ WEB VÀ LOGO ===
+        // === RENDER THẺ WEB ===
         function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
@@ -297,7 +283,7 @@
                 groupedData[category].forEach(item => {
                     let subText = item.account ? item.account : item.link.replace('https://', '');
                     
-                    // Gọi hàm tạo Icon thông minh
+                    // Gọi hàm tạo icon xử lý bên trên
                     let iconHtml = generateIconHtml(item.link, item.name);
 
                     grid.innerHTML += `
