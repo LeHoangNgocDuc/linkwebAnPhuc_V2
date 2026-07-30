@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Quản Trị</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #2c3e50;
+            --accent: #3498db;
+        }
+        body {
+            margin: 0; padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .header-title {
+            color: white; font-size: 28px; font-weight: bold; margin-bottom: 30px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+        }
+        .container {
+            width: 100%; max-width: 800px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .web-name { font-size: 20px; font-weight: bold; color: var(--text-main); margin: 0 0 10px 0; }
+        .web-account { font-size: 14px; color: #555; margin-bottom: 15px; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn {
+            flex: 1; padding: 10px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-visit { background-color: var(--text-main); color: white; text-decoration: none; text-align: center; }
+        .btn-visit:hover { background-color: #1a252f; }
+        .btn-pass { background-color: var(--accent); color: white; }
+        .btn-pass:hover { background-color: #2980b9; }
+        .pass-display {
+            margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.8);
+            border-radius: 8px; text-align: center; font-family: monospace;
+            font-size: 16px; display: none; color: #d35400; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-title">Hệ Thống Quản Trị - Thầy Đức</div>
+    <div class="container" id="webList">
+        <!-- Dữ liệu sẽ được load vào đây -->
+        <p style="color: white; text-align: center; width: 100%;">Đang tải dữ liệu...</p>
+    </div>
+
+    <script>
+        // === CẤU HÌNH API ===
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzubzVpA9WcuuG5ZZB8ZNUGJxhFHwJvHlBH3rJotMYd-UWUngXua7IitAiNBpV_5Lfq/exec";
+        const SECRET_TOKEN = "ThayDuc_THCSTranHungDao_2026"; 
+
+        // Khởi chạy khi load trang
+        document.addEventListener("DOMContentLoaded", loadWebsites);
+
+        async function loadWebsites() {
+            try {
+                const response = await fetch(`${GAS_API_URL}?action=getList`);
+                const result = await response.json();
+                
+                if(result.status === "success") {
+                    renderCards(result.data);
+                } else {
+                    alert("Lỗi tải dữ liệu: " + result.message);
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+                document.getElementById('webList').innerHTML = "<p style='color: white;'>Lỗi kết nối máy chủ.</p>";
+            }
+        }
+
+        function renderCards(data) {
+            const container = document.getElementById('webList');
+            container.innerHTML = '';
+            
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3 class="web-name">${item.name}</h3>
+                    <div class="web-account">Tài khoản: <strong>${item.account}</strong></div>
+                    <div class="btn-group">
+                        <a href="${item.link}" target="_blank" class="btn btn-visit">Truy cập</a>
+                        <button class="btn btn-pass" onclick="requestPassword('${item.id}', this)">Xem Pass</button>
+                    </div>
+                    <div class="pass-display" id="pass-${item.id}"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Kích hoạt Face ID / Touch ID (WebAuthn)
+        async function triggerFaceID() {
+            if (!window.PublicKeyCredential) {
+                alert("Thiết bị hoặc trình duyệt không hỗ trợ Face ID/Vân tay.");
+                return false;
+            }
+
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+
+            try {
+                // Yêu cầu xác thực sinh trắc học cục bộ
+                await navigator.credentials.create({
+                    publicKey: {
+                        challenge: challenge,
+                        rp: { name: "Portal Quản Trị", id: window.location.hostname },
+                        user: {
+                            id: new Uint8Array(16),
+                            name: "admin",
+                            displayName: "Xác thực bảo mật"
+                        },
+                        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+                        authenticatorSelection: {
+                            authenticatorAttachment: "platform", // Ép dùng Face ID/Vân tay
+                            userVerification: "required"
+                        },
+                        timeout: 60000
+                    }
+                });
+                return true; // Xác thực sinh trắc học thành công
+            } catch (error) {
+                console.warn("Face ID failed/cancelled:", error);
+                return false;
+            }
+        }
+
+        async function requestPassword(id, btnElement) {
+            // 1. Gọi Face ID / Touch ID
+            const isVerified = await triggerFaceID();
+            
+            if (!isVerified) {
+                alert("Xác thực khuôn mặt thất bại. Không thể hiển thị mật khẩu.");
+                return;
+            }
+
+            // 2. Nếu khuôn mặt đúng, gọi API lấy Pass
+            const passDisplay = document.getElementById(`pass-${id}`);
+            btnElement.innerText = "Đang lấy...";
+            
+            try {
+                const response = await fetch(`${GAS_API_URL}?action=getPass&id=${id}&token=${SECRET_TOKEN}`);
+                const result = await response.json();
+                
+                if(result.status === "success") {
+                    passDisplay.innerText = result.pass;
+                    passDisplay.style.display = "block";
+                    btnElement.style.display = "none"; // Ẩn nút xem pass sau khi hiện
+                } else {
+                    alert("Lỗi: " + result.message);
+                }
+            } catch (error) {
+                alert("Lỗi kết nối khi lấy mật khẩu.");
+            }
+            
+            btnElement.innerText = "Xem Pass";
+        }
+    </script>
+</body>
+</html>
