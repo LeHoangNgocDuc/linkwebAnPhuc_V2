@@ -40,7 +40,7 @@
         .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; transition: 0.2s;}
         .card-link-wrapper:hover .card-title { color: var(--primary); }
         
-        .web-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 12px; object-fit: contain; background: #ffffff; padding: 6px; border: 1px solid #f3f4f6; box-shadow: 0 2px 5px rgba(0,0,0,0.04);}
+        .web-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 12px; object-fit: contain; background: #ffffff; padding: 4px; border: 1px solid #f3f4f6; box-shadow: 0 2px 5px rgba(0,0,0,0.04);}
         
         .card-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -52,11 +52,11 @@
         .action-edit { color: #f59e0b; font-size: 13px; font-weight: 600; cursor: pointer; }
         .action-del { color: #ef4444; font-size: 13px; font-weight: 600; cursor: pointer;}
         
-        /* Modal Form */
+        /* Modal Form (Đã sửa CSS để Select và Input giống hệt nhau) */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000;}
-        .modal-content { background: white; padding: 35px; border-radius: 20px; width: 420px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);}
+        .modal-content { background: white; padding: 35px; border-radius: 20px; width: 420px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);}
         .modal-content h3 { margin: 0 0 10px 0; color: var(--text-main); }
-        .modal-content input { padding: 12px 15px; border: 1px solid var(--border); border-radius: 10px; width: 100%; font-size: 14px; outline: none;}
+        .modal-content input, .modal-content select { padding: 12px 15px; border: 1px solid var(--border); border-radius: 10px; width: 100%; font-size: 14px; outline: none; background: white; font-family: inherit;}
         .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;}
         .pass-result { margin-top: 15px; padding: 12px; background: #ecfdf5; color: #059669; border-radius: 8px; font-family: monospace; display: none; font-size: 14px; word-break: break-all;}
     </style>
@@ -70,8 +70,7 @@
         </div>
         
         <div class="sidebar-title">DANH MỤC</div>
-        
-        <!-- Menu sẽ được JS tự động vẽ ra dựa trên Tag có trong Database -->
+        <!-- Menu sẽ được JS tự động vẽ ra -->
         <div id="menu-container"></div>
     </div>
 
@@ -84,16 +83,18 @@
         </div>
     </div>
 
-    <!-- Modal Form -->
+    <!-- Modal Form Cải Tiến -->
     <div class="modal" id="formModal">
         <div class="modal-content">
             <h3 id="modalTitle">Thêm Trang Web</h3>
             <input type="text" id="wName" placeholder="Tên trang web">
             <input type="text" id="wLink" placeholder="https://...">
             
-            <!-- Danh sách Tag được tạo tự động để gợi ý khi Sửa/Thêm -->
-            <input type="text" id="wCategory" list="categoryList" placeholder="Nhập hoặc chọn Danh mục">
-            <datalist id="categoryList"></datalist>
+            <!-- Cải tiến 1: Dropdown kết hợp Input ẩn -->
+            <select id="wCategorySelect" onchange="toggleCategoryInput()">
+                <!-- JS sẽ tự động điền các tag vào đây -->
+            </select>
+            <input type="text" id="wCategoryInput" placeholder="Nhập tên danh mục mới..." style="display:none;">
 
             <input type="text" id="wAccount" placeholder="Tài khoản">
             <input type="password" id="wPass" placeholder="Mật khẩu">
@@ -105,7 +106,7 @@
     </div>
 
     <script>
-        // === CẤU HÌNH API CỦA BẠN ===
+        // === CẤU HÌNH API CỦA THẦY Ở ĐÂY ===
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxiEixnqGUKtOtnZT35T0cKOClpRc2igbyhsyBhusoXj7HH7KJOuFJYHZuQKace-DwL/exec";
         const SECRET_COMMUNICATION_TOKEN = "ThayDuc_Authentication_Secret_Token_Long_String_2026"; 
         
@@ -121,19 +122,17 @@
                 const result = await response.json();
                 if(result.status === "success") {
                     globalDataList = result.data; 
-                    renderSidebar(); // Tự động tạo menu
-                    updateCategoryDatalist(); // Tự động tạo list gợi ý Sửa
+                    renderSidebar(); 
                     applyFilters(); 
                 }
             } catch (e) { console.error("Lỗi tải dữ liệu"); }
         }
 
-        // === TỰ ĐỘNG TẠO MENU TỪ DỮ LIỆU ===
+        // === TỰ ĐỘNG TẠO MENU ===
         function renderSidebar() {
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
             
-            // 1. Luôn có nút "Tất cả"
             container.innerHTML += `
                 <div class="menu-item ${currentCategoryFilter === 'all' ? 'active' : ''}" onclick="filterData('all', this)">
                     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
@@ -141,9 +140,7 @@
                 </div>
             `;
             
-            // 2. Lấy danh sách các Tag đang có (Không trùng lặp)
             const dataCategories = globalDataList.map(item => item.category).filter(c => c && c.trim() !== "");
-            // Giữ lại Công việc và Cá nhân làm mặc định cơ bản
             const allCategories = [...new Set(["Công việc", "Cá nhân", ...dataCategories])];
             
             allCategories.forEach(cat => {
@@ -153,7 +150,6 @@
                 } else if (cat === "Cá nhân") {
                     iconSvg = `<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
                 } else {
-                    // Biểu tượng Nhãn dán cho các tag tự tạo (như AN PHÚC EDUCATION, v.v.)
                     iconSvg = `<svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>`;
                 }
                 
@@ -166,10 +162,10 @@
             });
         }
 
-        // Tự động tạo danh sách xổ xuống khi ấn "Sửa"
-        function updateCategoryDatalist() {
-            const datalist = document.getElementById('categoryList');
-            datalist.innerHTML = '';
+        // Tự động load danh sách Select khi mở Modal
+        function updateCategorySelect() {
+            const select = document.getElementById('wCategorySelect');
+            select.innerHTML = '';
             
             const dataCategories = globalDataList.map(item => item.category).filter(c => c && c.trim() !== "");
             const allCategories = [...new Set(["Công việc", "Cá nhân", ...dataCategories])];
@@ -177,14 +173,32 @@
             allCategories.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat;
-                datalist.appendChild(option);
+                option.innerText = cat;
+                select.appendChild(option);
             });
+            
+            // Bổ sung nút tạo mới
+            const newOption = document.createElement('option');
+            newOption.value = "__NEW__";
+            newOption.innerText = "➕ Thêm tag mới...";
+            select.appendChild(newOption);
         }
 
-        // === LOGIC LỌC DANH MỤC ===
+        // Ẩn/Hiện Input nhập Tag mới
+        function toggleCategoryInput() {
+            const select = document.getElementById('wCategorySelect');
+            const input = document.getElementById('wCategoryInput');
+            if (select.value === "__NEW__") {
+                input.style.display = "block";
+                input.focus();
+            } else {
+                input.style.display = "none";
+            }
+        }
+
         function filterData(category, element) {
             currentCategoryFilter = category;
-            renderSidebar(); // Render lại để cập nhật class Active
+            renderSidebar(); 
             applyFilters();
         }
 
@@ -196,7 +210,7 @@
             renderCards(filtered);
         }
 
-        // === RENDER THẺ WEB ===
+        // === RENDER THẺ WEB VÀ LOGO ===
         function renderCards(data) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
@@ -227,21 +241,29 @@
                 groupedData[category].forEach(item => {
                     let subText = item.account ? item.account : item.link.replace('https://', '');
                     
-                    // Logic tối ưu lấy Icon của web (Khắc phục lỗi web Vnedu)
+                    // Lọc Tên Miền
                     let domain = "";
                     try { domain = new URL(item.link).hostname; } 
                     catch(e) { domain = item.link; }
                     
-                    // Dùng dịch vụ Icon.horse (Chuyên bắt icon nội bộ VN rất tốt)
-                    let primaryIcon = `https://icon.horse/icon/${domain}`;
-                    // Nếu lỗi, sẽ nhảy sang ảnh dự phòng của Google
-                    let fallbackIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                    // Cải tiến 2: Ép tên miền về máy chủ gốc cho các trang giáo dục VN
+                    if (domain.includes("vnedu.vn")) domain = "vnedu.vn";
+                    if (domain.includes("truong.edu.vn")) domain = "truong.edu.vn";
+                    if (domain.includes("khanhhoa.edu.vn")) domain = "khanhhoa.edu.vn";
+                    if (domain.includes("edu.vn") && domain.split('.').length > 3) {
+                         // Xử lý các subdomain edu.vn khác
+                         let parts = domain.split('.');
+                         domain = parts.slice(-3).join('.');
+                    }
 
+                    // Gọi ảnh logo gốc từ Google (Độ phân giải 128px)
+                    let iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                    
                     grid.innerHTML += `
                         <div class="card">
                             <a href="${item.link}" target="_blank" class="card-link-wrapper">
                                 <div class="card-header">
-                                    <img src="${primaryIcon}" class="web-icon" alt="icon" onerror="this.onerror=null; this.src='${fallbackIcon}';">
+                                    <img src="${iconUrl}" class="web-icon" alt="icon" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name.charAt(0))}&background=random&color=fff&size=128';">
                                     <div style="overflow: hidden; width: 100%;">
                                         <h3 class="card-title" title="${item.name}">${item.name}</h3>
                                         <div class="card-sub" title="${subText}">${subText}</div>
@@ -265,7 +287,7 @@
             }
         }
 
-        // === LOGIC FORM (THÊM / SỬA / XÓA) ===
+        // === LOGIC FORM ===
         function closeModal() { document.getElementById('formModal').style.display = 'none'; }
         
         function openAddModal() {
@@ -273,7 +295,12 @@
             document.getElementById('modalTitle').innerText = "Thêm Trang Web";
             document.getElementById('wName').value = "";
             document.getElementById('wLink').value = "";
-            document.getElementById('wCategory').value = ""; 
+            
+            updateCategorySelect();
+            document.getElementById('wCategorySelect').value = "Công việc"; // Default
+            document.getElementById('wCategoryInput').style.display = "none";
+            document.getElementById('wCategoryInput').value = "";
+            
             document.getElementById('wAccount').value = "";
             document.getElementById('wPass').value = "";
             document.getElementById('wPass').placeholder = "Mật khẩu";
@@ -288,7 +315,23 @@
             document.getElementById('modalTitle').innerText = "Sửa Thông Tin Web";
             document.getElementById('wName').value = item.name;
             document.getElementById('wLink').value = item.link;
-            document.getElementById('wCategory').value = item.category;
+            
+            updateCategorySelect();
+            const select = document.getElementById('wCategorySelect');
+            const input = document.getElementById('wCategoryInput');
+            
+            // Xử lý nạp Tag hiện tại vào Select
+            let exists = Array.from(select.options).some(opt => opt.value === item.category);
+            if (exists) {
+                select.value = item.category;
+                input.style.display = "none";
+                input.value = "";
+            } else {
+                select.value = "__NEW__";
+                input.style.display = "block";
+                input.value = item.category;
+            }
+
             document.getElementById('wAccount').value = item.account;
             document.getElementById('wPass').value = "";
             document.getElementById('wPass').placeholder = "(Để trống nếu không đổi mật khẩu)";
@@ -296,12 +339,21 @@
         }
 
         async function saveData() {
+            let categoryVal = document.getElementById('wCategorySelect').value;
+            if (categoryVal === "__NEW__") {
+                categoryVal = document.getElementById('wCategoryInput').value.trim();
+                if (!categoryVal) {
+                    alert("Vui lòng nhập tên danh mục mới!");
+                    return;
+                }
+            }
+
             const payload = {
                 action: editingId ? "update" : "add",
                 id: editingId,
                 name: document.getElementById('wName').value,
                 link: document.getElementById('wLink').value,
-                category: document.getElementById('wCategory').value,
+                category: categoryVal,
                 account: document.getElementById('wAccount').value,
                 password: document.getElementById('wPass').value
             };
