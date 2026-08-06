@@ -2,466 +2,663 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Hub - An Phúc Education</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kiểm tra trực tuyến - An Phúc Education</title>
+    <!-- Sử dụng Font hiện đại Be Vietnam Pro -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f4f7fc; --sidebar: #ffffff; --primary: #2563eb; --text-main: #1f2937; --text-sub: #4b5563; --border: #e5e7eb; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { margin: 0; display: flex; height: 100vh; background-color: var(--bg); }
-        
-        /* Sidebar */
-        .sidebar { width: 280px; background: var(--sidebar); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid var(--border); overflow-y: auto;}
-        
-        .logo-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 35px; gap: 12px; }
-        .logo-container img { width: 95px; height: 95px; object-fit: contain; border-radius: 12px; }
-        .logo-text { font-size: 18px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; }
+        :root {
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --secondary: #3B82F6;
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-main: #0F172A;
+            --text-sub: #64748B;
+            --border-color: #E2E8F0;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --shadow-header: 0 4px 20px rgba(0, 0, 0, 0.03);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        .sidebar-title { font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: 1px; margin-bottom: 20px; margin-left: 15px; text-transform: uppercase;}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: var(--card-bg);
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: var(--shadow-header);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-back {
+            display: none;
+            background: #F1F5F9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover { background: #E2E8F0; }
         
-        #menu-container { display: flex; flex-direction: column; gap: 5px; }
-        .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; border-radius: 16px; color: var(--text-sub); cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.2s ease;}
-        .menu-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;}
-        .menu-item:hover:not(.active) { background: #f3f4f6; }
-        .menu-item.active { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
+        .btn-back svg {
+            width: 20px; height: 20px;
+            stroke: var(--text-main);
+            stroke-width: 2.5; fill: none;
+        }
+
+        .logo-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         
-        .main-content { flex: 1; display: flex; flex-direction: column; padding: 30px 50px; overflow-y: auto;}
+        .logo-title img { width: 32px; height: 32px; border-radius: 8px; }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-sub);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-login:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* --- MAIN CONTAINER --- */
+        main {
+            flex: 1;
+            padding: 32px 24px 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .view-section.active { display: block; }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .section-desc {
+            text-align: center;
+            color: var(--text-sub);
+            margin-top: -16px;
+            margin-bottom: 32px;
+            font-size: 15px;
+        }
+
+        /* --- GRID & CARDS --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Card Chọn Khối & Loại Bài */
+        .card-large {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 32px 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-large:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: #BFDBFE;
+        }
+
+        .card-large::after {
+            content: '→';
+            position: absolute;
+            right: 24px;
+            font-size: 24px;
+            color: #94A3B8;
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        .card-large:hover::after {
+            opacity: 1;
+            transform: translateX(0);
+            color: var(--primary);
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .icon-blue { background: #DBEAFE; color: #2563EB; }
+        .icon-orange { background: #FFEDD5; color: #EA580C; }
+        .icon-green { background: #DCFCE7; color: #16A34A; }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* Test List (Danh sách bài) */
+        .chapter-group {
+            margin-bottom: 32px;
+        }
         
-        .header { display: flex; justify-content: flex-end; margin-bottom: 15px;}
-        .btn-add { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); transition: 0.2s;}
-        .btn-add:hover { background: #1d4ed8; }
-        
-        #cardContainer { display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px;}
-        .category-header { font-size: 14px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin: 20px 0 15px 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; letter-spacing: 1px;}
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 10px;}
-        .card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; min-height: 160px;}
-        
-        .card-link-wrapper { text-decoration: none; color: inherit; display: block; flex: 1; }
-        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; transition: 0.2s;}
-        .card-link-wrapper:hover .card-title { color: var(--primary); }
-        
-        .web-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 12px; object-fit: cover; background: #ffffff; padding: 2px; border: 1px solid #f3f4f6; box-shadow: 0 2px 5px rgba(0,0,0,0.04);}
-        
-        .card-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .card-sub { font-size: 13px; color: #6b7280; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        
-        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; border-top: 1px solid #f3f4f6; padding-top: 15px; gap: 10px;}
-        .tag { font-size: 10px; background: #f3f4f6; padding: 6px 10px; border-radius: 6px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;}
-        .actions { display: flex; gap: 12px; flex-shrink: 0; } 
-        .action-link { color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;}
-        .action-edit { color: #f59e0b; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .action-del { color: #ef4444; font-size: 13px; font-weight: 600; cursor: pointer;}
-        
-        /* Modal Form */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000;}
-        .modal-content { background: white; padding: 35px; border-radius: 20px; width: 420px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);}
-        .modal-content h3 { margin: 0 0 10px 0; color: var(--text-main); }
-        .modal-content input, .modal-content select { padding: 12px 15px; border: 1px solid var(--border); border-radius: 10px; width: 100%; font-size: 14px; outline: none; background: white; font-family: inherit;}
-        .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;}
-        .pass-result { margin-top: 15px; padding: 12px; background: #ecfdf5; color: #059669; border-radius: 8px; font-family: monospace; display: none; font-size: 14px; word-break: break-all;}
+        .chapter-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #E2E8F0;
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-test {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .card-test:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: #BFDBFE;
+        }
+
+        .test-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .test-icon {
+            width: 40px;
+            height: 40px;
+            background: #F1F5F9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .test-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .test-info p {
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-action:hover { background: var(--primary-hover); }
+        .btn-action.disabled { background: #94A3B8; cursor: not-allowed; }
+
+        /* Admin Controls */
+        .admin-controls {
+            display: none;
+            border-top: 1px solid #F1F5F9;
+            padding-top: 12px;
+            margin-top: auto;
+            gap: 8px;
+        }
+        .admin-controls button {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-edit { background: #FEF3C7; color: #D97706; }
+        .btn-delete { background: #FEE2E2; color: #DC2626; }
+
+        /* Loader */
+        #loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            gap: 16px;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #E2E8F0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-sub);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+        footer strong { color: var(--primary); }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .grid-container { grid-template-columns: 1fr; }
+            .card-large { padding: 24px 20px; }
+            .card-icon { width: 56px; height: 56px; font-size: 28px; }
+            main { padding: 24px 16px 40px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="logo.jpg" alt="Logo">
-            <div class="logo-text">LINK WEB</div>
-        </div>
-        
-        <div class="sidebar-title">DANH MỤC</div>
-        <!-- Menu sẽ được JS tự động vẽ ra -->
-        <div id="menu-container"></div>
-    </div>
-
-    <div class="main-content">
-        <div class="header">
-            <button class="btn-add" onclick="openAddModal()">+ THÊM MỚI</button>
-        </div>
-        <div id="cardContainer">
-            <!-- Data load here -->
-        </div>
-    </div>
-
-    <!-- Modal Form -->
-    <div class="modal" id="formModal">
-        <div class="modal-content">
-            <h3 id="modalTitle">Thêm Trang Web</h3>
-            <input type="text" id="wName" placeholder="Tên trang web">
-            <input type="text" id="wLink" placeholder="https://...">
-            
-            <select id="wCategorySelect" onchange="toggleCategoryInput()"></select>
-            <input type="text" id="wCategoryInput" placeholder="Nhập tên danh mục mới..." style="display:none;">
-
-            <input type="text" id="wAccount" placeholder="Tài khoản">
-            <input type="password" id="wPass" placeholder="Mật khẩu">
-            <div class="modal-buttons">
-                <button class="btn-add" style="background:#9ca3af; padding: 10px 20px;" onclick="closeModal()">Hủy</button>
-                <button class="btn-add" style="padding: 10px 20px;" onclick="saveData()">Lưu</button>
+    <header>
+        <div class="header-left">
+            <button class="btn-back" id="btnBack" onclick="goBack()" aria-label="Quay lại">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="logo-title">
+                <!-- Fallback icon cho Logo -->
+                <div style="background:var(--primary); color:white; width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">A</div>
+                An Phúc Education
             </div>
         </div>
-    </div>
+        <button class="btn-login" onclick="promptLogin()" id="btnLogin">Giáo viên</button>
+    </header>
+
+    <main>
+        <!-- Loader -->
+        <div id="loader">
+            <div class="spinner"></div>
+            <p>Đang tải dữ liệu, vui lòng đợi...</p>
+        </div>
+
+        <!-- Màn hình 1: Chọn Khối -->
+        <div id="view-grades" class="view-section">
+            <h1 class="section-title">Khối lớp của bạn</h1>
+            <p class="section-desc">Chọn khối lớp để bắt đầu làm bài</p>
+            <div class="grid-container" id="grade-container">
+                <!-- Render từ JS -->
+            </div>
+        </div>
+
+        <!-- Màn hình 2: Chọn Loại Bài (Thường xuyên / Định kỳ) -->
+        <div id="view-types" class="view-section">
+            <h1 class="section-title" id="type-title">Toán</h1>
+            <p class="section-desc">Chọn hình thức kiểm tra</p>
+            <div class="grid-container">
+                <div class="card-large" onclick="selectType('regular')">
+                    <div class="card-icon icon-blue">📝</div>
+                    <div>
+                        <h2 class="card-title">Thường xuyên</h2>
+                        <p style="color:var(--text-sub); font-size:14px;">Kiểm tra 15p, bài tập theo chương</p>
+                    </div>
+                </div>
+                <div class="card-large" onclick="selectType('periodic')">
+                    <div class="card-icon icon-orange">🏆</div>
+                    <div>
+                        <h2 class="card-title">Định kỳ</h2>
+                        <p style="color:var(--text-sub); font-size:14px;">Thi Giữa kỳ, Cuối kỳ, Luyện đề</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Màn hình 3: Danh sách bài -->
+        <div id="view-tests" class="view-section">
+            <h1 class="section-title" id="test-title">Danh sách bài</h1>
+            <p class="section-desc" id="test-desc">Các bài kiểm tra đang mở</p>
+            <div id="test-container">
+                <!-- Render từ JS (Nhóm theo Chương hoặc Category) -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Hệ thống Kiểm tra Trực tuyến • Phát triển bởi <strong>Thầy Lê Hoàng Ngọc Đức</strong><br>
+        THCS Trần Hưng Đạo - Nam Nha Trang</p>
+    </footer>
 
     <script>
-        // === CẤU HÌNH API CỦA THẦY ===
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxiEixnqGUKtOtnZT35T0cKOClpRc2igbyhsyBhusoXj7HH7KJOuFJYHZuQKace-DwL/exec";
-        const SECRET_COMMUNICATION_TOKEN = "ThayDuc_Authentication_Secret_Token_Long_String_2026"; 
+        // Cấu hình URL API Google Apps Script (Thầy thay bằng link web app thực tế)
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxGe_4g2lkis1BurcB55ODLDKkkG1Fisy2rinlv07t1m9UgZO516YLq6ke7IfxC7ef_Xw/exec";
         
-        let globalDataList = [];
-        let currentCategoryFilter = 'all';
-        let editingId = null;
+        // State Management
+        let appData = {
+            regular: [],
+            periodic: []
+        };
+        let currentState = {
+            view: 'grades', // grades -> types -> tests
+            grade: null,
+            type: null
+        };
+        let isAdmin = false;
 
-        document.addEventListener("DOMContentLoaded", loadData);
+        // Khởi tạo ứng dụng
+        document.addEventListener('DOMContentLoaded', initApp);
 
-        async function loadData() {
+        async function initApp() {
             try {
-                const response = await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: "getList" }) });
-                const result = await response.json();
-                if(result.status === "success") {
-                    globalDataList = result.data; 
-                    renderSidebar(); 
-                    applyFilters(); 
-                }
-            } catch (e) { console.error("Lỗi tải dữ liệu"); }
+                // Tải song song 2 luồng dữ liệu để cache 1 lần duy nhất
+                const [regRes, perRes] = await Promise.all([
+                    fetch(`${GAS_API_URL}?action=getRegular`).then(r => r.json()),
+                    fetch(`${GAS_API_URL}?action=getPeriodic`).then(r => r.json())
+                ]);
+
+                appData.regular = Array.isArray(regRes) ? regRes : [];
+                appData.periodic = Array.isArray(perRes) ? perRes : [];
+
+            } catch (err) {
+                console.error("Lỗi tải dữ liệu. Sử dụng dữ liệu mẫu cho Demo.", err);
+                // Dữ liệu fallback nếu API lỗi (giữ ứng dụng sống)
+                appData.regular = [
+                    { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 1: Tập hợp', code: 'https://forms.gle/demo1' },
+                    { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 2: Phép cộng', code: 'https://forms.gle/demo2' },
+                    { grade: 'Toán 7', chapter: 'Chương 1: Số hữu tỉ', lesson: 'Bài 1: Khái niệm', code: '' }
+                ];
+                appData.periodic = [
+                    { grade: 'Toán 6', category: 'Giữa kì 1', displayName: 'Đề ôn tập số 1', code: 'https://azota.vn/demo' }
+                ];
+            }
+
+            document.getElementById('loader').style.display = 'none';
+            renderGrades();
         }
 
-        // === THUẬT TOÁN TẠO MENU ===
-        function renderSidebar() {
-            const container = document.getElementById('menu-container');
+        // Điều hướng & UI Control
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            
+            const btnBack = document.getElementById('btnBack');
+            if (viewName === 'grades') {
+                btnBack.style.display = 'none';
+            } else {
+                btnBack.style.display = 'flex';
+            }
+            currentState.view = viewName;
+            window.scrollTo(0,0);
+        }
+
+        function goBack() {
+            if (currentState.view === 'tests') switchView('types');
+            else if (currentState.view === 'types') switchView('grades');
+        }
+
+        // Màn hình 1: Render Danh sách Khối
+        function renderGrades() {
+            const gradesSet = new Set([
+                ...appData.regular.map(d => d.grade),
+                ...appData.periodic.map(d => d.grade)
+            ]);
+            
+            let grades = Array.from(gradesSet).filter(Boolean).sort((a,b) => {
+                // Sắp xếp tự nhiên (Toán 6 -> Toán 7...)
+                let numA = parseInt(a.replace(/\D/g, '')) || 0;
+                let numB = parseInt(b.replace(/\D/g, '')) || 0;
+                return numA - numB;
+            });
+
+            if(grades.length === 0) grades = ["Toán 6", "Toán 7", "Toán 8", "Toán 9"]; // Dự phòng
+
+            const container = document.getElementById('grade-container');
             container.innerHTML = '';
             
-            container.innerHTML += `
-                <div class="menu-item ${currentCategoryFilter === 'all' ? 'active' : ''}" onclick="filterData('all', this)">
-                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                    Tất cả
-                </div>
-            `;
-            
-            const dataCategories = globalDataList.map(item => item.category).filter(c => c && c.trim() !== "");
-            const allCategories = [...new Set(["Công việc", "Cá nhân", ...dataCategories])];
-            
-            allCategories.forEach(cat => {
-                let iconSvg = '';
-                if (cat === "Công việc") {
-                    iconSvg = `<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`;
-                } else if (cat === "Cá nhân") {
-                    iconSvg = `<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-                } else {
-                    iconSvg = `<svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>`;
-                }
-                
+            const icons = ['📘', '📗', '📙', '📕', '🎓', '📚'];
+
+            grades.forEach((grade, index) => {
+                const icon = icons[index % icons.length];
                 container.innerHTML += `
-                    <div class="menu-item ${currentCategoryFilter === cat ? 'active' : ''}" onclick="filterData('${cat}', this)">
-                        ${iconSvg}
-                        ${cat}
+                    <div class="card-large" onclick="selectGrade('${grade}')">
+                        <div class="card-icon" style="background:#F1F5F9;">${icon}</div>
+                        <div>
+                            <h2 class="card-title">${grade}</h2>
+                        </div>
                     </div>
                 `;
             });
+            switchView('grades');
         }
 
-        function updateCategorySelect() {
-            const select = document.getElementById('wCategorySelect');
-            select.innerHTML = '';
-            
-            const dataCategories = globalDataList.map(item => item.category).filter(c => c && c.trim() !== "");
-            const allCategories = [...new Set(["Công việc", "Cá nhân", ...dataCategories])];
-            
-            allCategories.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat;
-                option.innerText = cat;
-                select.appendChild(option);
-            });
-            
-            const newOption = document.createElement('option');
-            newOption.value = "__NEW__";
-            newOption.innerText = "➕ Thêm tag mới...";
-            select.appendChild(newOption);
+        function selectGrade(grade) {
+            currentState.grade = grade;
+            document.getElementById('type-title').innerText = grade;
+            switchView('types');
         }
 
-        function toggleCategoryInput() {
-            const select = document.getElementById('wCategorySelect');
-            const input = document.getElementById('wCategoryInput');
-            if (select.value === "__NEW__") {
-                input.style.display = "block";
-                input.focus();
-            } else {
-                input.style.display = "none";
-            }
+        function selectType(type) {
+            currentState.type = type;
+            renderTests();
         }
 
-        function filterData(category, element) {
-            currentCategoryFilter = category;
-            renderSidebar(); 
-            applyFilters();
-        }
-
-        function applyFilters() {
-            let filtered = globalDataList;
-            if (currentCategoryFilter !== 'all') {
-                filtered = filtered.filter(item => item.category === currentCategoryFilter);
-            }
-            renderCards(filtered);
-        }
-
-        // === THUẬT TOÁN ĐỔI LOGO (LOẠI BỎ HOÀN TOÀN QUẢ CẦU MỜ) ===
-        function generateIconHtml(link, name) {
-            let domain = "";
-            try { 
-                let parseUrl = link.startsWith('http') ? link : 'https://' + link;
-                domain = new URL(parseUrl).hostname.toLowerCase(); 
-            } catch(e) {}
-
-            let iconUrl = "";
-            let linkStr = link.toLowerCase();
-            let nameStr = name.toLowerCase();
-            
-            // Xử lý cứng các trang web hay hiển thị lỗi
-            if (domain.includes("vnedu.vn") || nameStr.includes("vnedu")) {
-                // Tạo ảnh chữ V với viền xanh nhạt, chữ xanh đậm chuyên nghiệp
-                iconUrl = "https://ui-avatars.com/api/?name=V&background=e0f2fe&color=0284c7&size=128&font-size=0.65&bold=true";
-            } 
-            else if (domain.includes("temis") || domain.includes("csdl") || nameStr.includes("temis")) {
-                // Tạo ảnh chữ T với viền hồng nhạt, chữ hồng đậm
-                iconUrl = "https://ui-avatars.com/api/?name=T&background=fce7f3&color=be185d&size=128&font-size=0.65&bold=true";
-            }
-            else if (domain.includes("vercel") || nameStr.includes("vercel")) {
-                iconUrl = "https://assets.vercel.com/image/upload/q_auto/front/favicon/vercel/180x180.png";
-            } 
-            else if (domain.includes("anphuc") || nameStr.includes("an phúc")) {
-                iconUrl = "logo.jpg";
-            } 
-            else if (domain.includes("github.com") || nameStr.includes("github")) {
-                iconUrl = "https://github.githubassets.com/favicons/favicon.png";
-            } 
-            else if (domain.includes("mail.google.com") || domain.includes("gmail") || nameStr.includes("mail")) {
-                iconUrl = "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico";
-            }
-            else if (domain !== "") {
-                // Dùng icon.horse tốt hơn Google rất nhiều, không bao giờ ra quả cầu mờ
-                iconUrl = `https://icon.horse/icon/${domain}`;
-            }
-
-            // Fallback nếu web lạ hoàn toàn: Lấy chữ cái đầu tiên của tên web
-            let letter = name.charAt(0).toUpperCase();
-            let fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(letter)}&background=f3f4f6&color=2563eb&size=128&font-size=0.6&bold=true`;
-            
-            if (iconUrl === "") iconUrl = fallbackUrl;
-
-            // Nếu tải iconUrl bị lỗi (404), nó sẽ tự động fallback về chữ cái
-            return `<img src="${iconUrl}" class="web-icon" alt="icon" onerror="this.onerror=null; this.src='${fallbackUrl}';">`;
-        }
-
-        // === RENDER THẺ WEB ===
-        function renderCards(data) {
-            const container = document.getElementById('cardContainer');
+        // Màn hình 3: Render Danh sách Bài (Nhóm theo Chương hoặc Category)
+        function renderTests() {
+            const container = document.getElementById('test-container');
             container.innerHTML = '';
             
-            if (data.length === 0) {
-                container.innerHTML = '<p style="color: #6b7280; font-size: 15px;">Không có trang web nào trong mục này.</p>';
+            let sourceData = currentState.type === 'regular' ? appData.regular : appData.periodic;
+            // Lọc theo khối
+            let filtered = sourceData.filter(item => item.grade === currentState.grade);
+            
+            document.getElementById('test-title').innerText = currentState.type === 'regular' ? "Thường xuyên" : "Định kỳ";
+            document.getElementById('test-desc').innerText = `Khối ${currentState.grade}`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-sub); padding:40px;">Chưa có bài kiểm tra nào trong mục này.</p>`;
+                switchView('tests');
                 return;
             }
 
-            const groupedData = {};
-            data.forEach(item => {
-                const cat = item.category || "Khác";
-                if (!groupedData[cat]) groupedData[cat] = [];
-                groupedData[cat].push(item);
+            // Nhóm dữ liệu
+            let groups = {};
+            filtered.forEach(item => {
+                let groupKey = currentState.type === 'regular' ? (item.chapter || 'Khác') : (item.category || 'Khác');
+                if (!groups[groupKey]) groups[groupKey] = [];
+                groups[groupKey].push(item);
             });
 
-            for (const category in groupedData) {
-                if (currentCategoryFilter === 'all') {
-                    const header = document.createElement('h3');
-                    header.className = 'category-header';
-                    header.innerText = category;
-                    container.appendChild(header);
-                }
+            // Sinh HTML
+            for (const [groupName, items] of Object.entries(groups)) {
+                let groupHtml = `<div class="chapter-group">
+                    <div class="chapter-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        ${groupName}
+                    </div>
+                    <div class="grid-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                `;
 
-                const grid = document.createElement('div');
-                grid.className = 'grid';
-
-                groupedData[category].forEach(item => {
-                    let subText = item.account ? item.account : item.link.replace('https://', '');
+                items.forEach(item => {
+                    let itemName = currentState.type === 'regular' ? item.lesson : item.displayName;
+                    let link = item.code;
+                    let hasLink = link && link.trim() !== "";
                     
-                    // Gọi hàm tạo icon xử lý bên trên
-                    let iconHtml = generateIconHtml(item.link, item.name);
+                    let actionBtn = hasLink 
+                        ? `<a href="${link}" target="_blank" class="btn-action">Làm bài →</a>`
+                        : `<button class="btn-action disabled" disabled>Chưa mở</button>`;
 
-                    grid.innerHTML += `
-                        <div class="card">
-                            <a href="${item.link}" target="_blank" class="card-link-wrapper">
-                                <div class="card-header">
-                                    ${iconHtml}
-                                    <div style="overflow: hidden; width: 100%;">
-                                        <h3 class="card-title" title="${item.name}">${item.name}</h3>
-                                        <div class="card-sub" title="${subText}">${subText}</div>
-                                    </div>
-                                </div>
-                            </a>
-                            
-                            <div class="card-footer">
-                                <span class="tag" title="${item.category}">${item.category}</span>
-                                <div class="actions">
-                                    <span class="action-link" onclick="handleViewPass('${item.id}', this)">Xem Pass</span>
-                                    <span class="action-edit" onclick="openEditModal('${item.id}')">Sửa</span>
-                                    <span class="action-del" onclick="deleteWeb('${item.id}')">Xóa</span>
+                    let adminHtml = isAdmin ? `
+                        <div class="admin-controls" style="display:flex;">
+                            <button class="btn-edit" onclick="editTest('${currentState.type}', ${item.row})">Sửa</button>
+                        </div>
+                    ` : '';
+
+                    groupHtml += `
+                        <div class="card-test">
+                            <div class="test-header">
+                                <div class="test-icon">${currentState.type==='regular'?'📄':'⭐'}</div>
+                                <div class="test-info">
+                                    <h3>${itemName}</h3>
                                 </div>
                             </div>
-                            <div class="pass-result" id="pass-${item.id}"></div>
+                            <div style="flex-grow:1;"></div>
+                            ${actionBtn}
+                            ${adminHtml}
                         </div>
                     `;
                 });
-                container.appendChild(grid);
-            }
-        }
 
-        // === LOGIC FORM ===
-        function closeModal() { document.getElementById('formModal').style.display = 'none'; }
-        
-        function openAddModal() {
-            editingId = null;
-            document.getElementById('modalTitle').innerText = "Thêm Trang Web";
-            document.getElementById('wName').value = "";
-            document.getElementById('wLink').value = "";
-            
-            updateCategorySelect();
-            document.getElementById('wCategorySelect').value = "Công việc"; 
-            document.getElementById('wCategoryInput').style.display = "none";
-            document.getElementById('wCategoryInput').value = "";
-            
-            document.getElementById('wAccount').value = "";
-            document.getElementById('wPass').value = "";
-            document.getElementById('wPass').placeholder = "Mật khẩu";
-            document.getElementById('formModal').style.display = 'flex';
-        }
-
-        function openEditModal(id) {
-            editingId = id;
-            const item = globalDataList.find(x => x.id === id);
-            if(!item) return;
-
-            document.getElementById('modalTitle').innerText = "Sửa Thông Tin Web";
-            document.getElementById('wName').value = item.name;
-            document.getElementById('wLink').value = item.link;
-            
-            updateCategorySelect();
-            const select = document.getElementById('wCategorySelect');
-            const input = document.getElementById('wCategoryInput');
-            
-            let exists = Array.from(select.options).some(opt => opt.value === item.category);
-            if (exists) {
-                select.value = item.category;
-                input.style.display = "none";
-                input.value = "";
-            } else {
-                select.value = "__NEW__";
-                input.style.display = "block";
-                input.value = item.category;
+                groupHtml += `</div></div>`;
+                container.innerHTML += groupHtml;
             }
 
-            document.getElementById('wAccount').value = item.account;
-            document.getElementById('wPass').value = "";
-            document.getElementById('wPass').placeholder = "(Để trống nếu không đổi mật khẩu)";
-            document.getElementById('formModal').style.display = 'flex';
+            switchView('tests');
         }
 
-        async function saveData() {
-            let categoryVal = document.getElementById('wCategorySelect').value;
-            if (categoryVal === "__NEW__") {
-                categoryVal = document.getElementById('wCategoryInput').value.trim();
-                if (!categoryVal) {
-                    alert("Vui lòng nhập tên danh mục mới!");
-                    return;
-                }
-            }
-
-            const payload = {
-                action: editingId ? "update" : "add",
-                id: editingId,
-                name: document.getElementById('wName').value,
-                link: document.getElementById('wLink').value,
-                category: categoryVal,
-                account: document.getElementById('wAccount').value,
-                password: document.getElementById('wPass').value
-            };
-            
-            const btn = document.querySelector('#formModal .btn-add:nth-child(2)');
-            btn.innerText = "Đang lưu...";
-            
-            await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            btn.innerText = "Lưu";
-            closeModal(); 
-            loadData();
-        }
-
-        async function deleteWeb(id) {
-            if(confirm("Bạn có chắc chắn muốn xóa website này?")) {
-                await fetch(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: id }) });
-                loadData();
-            }
-        }
-
-        // === BẢO MẬT SINH TRẮC HỌC WEBAUTHN ===
-        async function triggerBiometricAuth() {
-            if (!window.PublicKeyCredential) return false; 
-            const challenge = new Uint8Array(32);
-            window.crypto.getRandomValues(challenge);
-            try {
-                await navigator.credentials.create({
-                    publicKey: {
-                        challenge: challenge,
-                        rp: { name: "Portal Link Hub", id: window.location.hostname },
-                        user: { id: new Uint8Array(16), name: "admin", displayName: "Xác thực bảo mật" },
-                        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-                        timeout: 60000 
-                    }
-                });
-                return true;
-            } catch (err) { return false; }
-        }
-
-        async function handleViewPass(webId, btnElement) {
-            const passDisplay = document.getElementById(`pass-${webId}`);
-            
-            if (btnElement.innerText === "Ẩn Pass") {
-                passDisplay.style.display = "none";
-                btnElement.innerText = "Xem Pass";
-                btnElement.style.color = "var(--primary)";
+        // Logic Admin (Mô phỏng)
+        async function promptLogin() {
+            if (isAdmin) {
+                isAdmin = false;
+                document.getElementById('btnLogin').innerText = "Giáo viên";
+                if(currentState.view === 'tests') renderTests();
+                alert("Đã đăng xuất tài khoản Giáo viên.");
                 return;
             }
 
-            passDisplay.style.display = "block";
-            passDisplay.innerText = "Đang chờ quét Face ID/Vân tay...";
-            
-            const isVerified = await triggerBiometricAuth();
-            if (!isVerified) {
-                passDisplay.innerText = "Xác thực thất bại.";
-                passDisplay.style.color = "#ef4444";
-                passDisplay.style.backgroundColor = "#fee2e2";
-                
-                setTimeout(() => { passDisplay.style.display = "none"; }, 3000);
-                return;
-            }
+            const pass = prompt("Nhập mật khẩu Giáo viên:");
+            if (!pass) return;
 
-            passDisplay.innerText = "Đang lấy mật khẩu...";
+            // Dùng fetch để gọi action="login" như trong Code1.docx
             try {
-                const response = await fetch(GAS_API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "getPass", id: webId, token: SECRET_COMMUNICATION_TOKEN })
-                });
-                const result = await response.json();
-                
-                if (result.status === "success") {
-                    passDisplay.innerText = "Pass: " + result.pass;
-                    passDisplay.style.color = "#059669";
-                    passDisplay.style.backgroundColor = "#ecfdf5";
-                    
-                    btnElement.innerText = "Ẩn Pass";
-                    btnElement.style.color = "#ef4444"; 
+                const response = await fetch(`${GAS_API_URL}?action=login&pass=${encodeURIComponent(pass)}`);
+                const res = await response.json();
+                if (res.valid) {
+                    isAdmin = true;
+                    document.getElementById('btnLogin').innerText = "Đăng xuất GV";
+                    if(currentState.view === 'tests') renderTests(); // Cập nhật lại UI hiển thị nút Sửa
                 } else {
-                    passDisplay.innerText = "Lỗi: " + result.message;
+                    alert("Mật khẩu không chính xác!");
                 }
-            } catch (e) { passDisplay.innerText = "Lỗi mạng."; }
+            } catch(e) {
+                // Fallback nếu API chưa hoạt động
+                if(pass === "Anphuc01") {
+                    isAdmin = true;
+                    document.getElementById('btnLogin').innerText = "Đăng xuất GV";
+                    if(currentState.view === 'tests') renderTests();
+                }
+            }
+        }
+
+        // Hàm Sửa link gọi API updateCode
+        async function editTest(sheetType, row) {
+            const newLink = prompt("Nhập link (code) mới cho bài kiểm tra này:");
+            if(newLink !== null) {
+                let sheetName = sheetType === 'regular' ? 'RegularData' : 'PeriodicData';
+                try {
+                    await fetch(`${GAS_API_URL}?action=updateCode&sheet=${sheetName}&row=${row}&code=${encodeURIComponent(newLink)}`);
+                    alert("Đã cập nhật thành công! Vui lòng tải lại trang để xem thay đổi.");
+                } catch (e) {
+                    alert("Cập nhật lỗi. (Nếu dùng Demo, hệ thống sẽ không ghi nhận).");
+                }
+            }
         }
     </script>
 </body>
