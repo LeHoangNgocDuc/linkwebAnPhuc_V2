@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kiểm tra trực tuyến - An Phúc Education</title>
-    <!-- Sử dụng Font hiện đại Be Vietnam Pro -->
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -92,8 +91,6 @@
             align-items: center;
             gap: 10px;
         }
-        
-        .logo-title img { width: 32px; height: 32px; border-radius: 8px; }
 
         .btn-login {
             background: transparent;
@@ -150,7 +147,6 @@
             gap: 20px;
         }
 
-        /* Card Chọn Khối & Loại Bài */
         .card-large {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
@@ -201,7 +197,6 @@
 
         .icon-blue { background: #DBEAFE; color: #2563EB; }
         .icon-orange { background: #FFEDD5; color: #EA580C; }
-        .icon-green { background: #DCFCE7; color: #16A34A; }
 
         .card-title {
             font-size: 20px;
@@ -290,7 +285,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            text-decoration: none;
         }
 
         .btn-action:hover { background: var(--primary-hover); }
@@ -314,9 +308,8 @@
             cursor: pointer;
         }
         .btn-edit { background: #FEF3C7; color: #D97706; }
-        .btn-delete { background: #FEE2E2; color: #DC2626; }
 
-        /* Loader */
+        /* Loader & Toast */
         #loader {
             display: flex;
             flex-direction: column;
@@ -328,12 +321,33 @@
             font-weight: 500;
         }
         .spinner {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border: 4px solid #E2E8F0;
             border-top: 4px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #10B981; /* Màu xanh lá thông báo thành công */
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            z-index: 1000;
+            opacity: 0;
+            white-space: nowrap;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         footer {
@@ -349,7 +363,6 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Mobile Adjustments */
         @media (max-width: 600px) {
             .grid-container { grid-template-columns: 1fr; }
             .card-large { padding: 24px 20px; }
@@ -366,7 +379,6 @@
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
             <div class="logo-title">
-                <!-- Fallback icon cho Logo -->
                 <div style="background:var(--primary); color:white; width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">A</div>
                 An Phúc Education
             </div>
@@ -385,12 +397,10 @@
         <div id="view-grades" class="view-section">
             <h1 class="section-title">Khối lớp của bạn</h1>
             <p class="section-desc">Chọn khối lớp để bắt đầu làm bài</p>
-            <div class="grid-container" id="grade-container">
-                <!-- Render từ JS -->
-            </div>
+            <div class="grid-container" id="grade-container"></div>
         </div>
 
-        <!-- Màn hình 2: Chọn Loại Bài (Thường xuyên / Định kỳ) -->
+        <!-- Màn hình 2: Chọn Loại Bài -->
         <div id="view-types" class="view-section">
             <h1 class="section-title" id="type-title">Toán</h1>
             <p class="section-desc">Chọn hình thức kiểm tra</p>
@@ -416,11 +426,12 @@
         <div id="view-tests" class="view-section">
             <h1 class="section-title" id="test-title">Danh sách bài</h1>
             <p class="section-desc" id="test-desc">Các bài kiểm tra đang mở</p>
-            <div id="test-container">
-                <!-- Render từ JS (Nhóm theo Chương hoặc Category) -->
-            </div>
+            <div id="test-container"></div>
         </div>
     </main>
+    
+    <!-- Popup thông báo Copy Code -->
+    <div id="toast" class="toast"></div>
 
     <footer>
         <p>Hệ thống Kiểm tra Trực tuyến • Phát triển bởi <strong>Thầy Lê Hoàng Ngọc Đức</strong><br>
@@ -428,53 +439,36 @@
     </footer>
 
     <script>
-        // Cấu hình URL API Google Apps Script (Thầy thay bằng link web app thực tế)
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxGe_4g2lkis1BurcB55ODLDKkkG1Fisy2rinlv07t1m9UgZO516YLq6ke7IfxC7ef_Xw/exec";
         
-        // State Management
-        let appData = {
-            regular: [],
-            periodic: []
-        };
-        let currentState = {
-            view: 'grades', // grades -> types -> tests
-            grade: null,
-            type: null
-        };
+        let appData = { regular: [], periodic: [] };
+        let currentState = { view: 'grades', grade: null, type: null };
         let isAdmin = false;
 
-        // Khởi tạo ứng dụng
         document.addEventListener('DOMContentLoaded', initApp);
 
         async function initApp() {
             try {
-                // Tải song song 2 luồng dữ liệu để cache 1 lần duy nhất
                 const [regRes, perRes] = await Promise.all([
                     fetch(`${GAS_API_URL}?action=getRegular`).then(r => r.json()),
                     fetch(`${GAS_API_URL}?action=getPeriodic`).then(r => r.json())
                 ]);
-
                 appData.regular = Array.isArray(regRes) ? regRes : [];
                 appData.periodic = Array.isArray(perRes) ? perRes : [];
-
             } catch (err) {
-                console.error("Lỗi tải dữ liệu. Sử dụng dữ liệu mẫu cho Demo.", err);
-                // Dữ liệu fallback nếu API lỗi (giữ ứng dụng sống)
                 appData.regular = [
-                    { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 1: Tập hợp', code: 'https://forms.gle/demo1' },
-                    { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 2: Phép cộng', code: 'https://forms.gle/demo2' },
+                    { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 1: Tập hợp', code: 'D6C1B1' },
+                    { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 2: Cách ghi số tự nhiên', code: 'D6C1B2' },
                     { grade: 'Toán 7', chapter: 'Chương 1: Số hữu tỉ', lesson: 'Bài 1: Khái niệm', code: '' }
                 ];
                 appData.periodic = [
-                    { grade: 'Toán 6', category: 'Giữa kì 1', displayName: 'Đề ôn tập số 1', code: 'https://azota.vn/demo' }
+                    { grade: 'Toán 6', category: 'Cuối kì II', displayName: 'THCS Lam Sơn', code: 'T6CKII2526DE01LS' }
                 ];
             }
-
             document.getElementById('loader').style.display = 'none';
             renderGrades();
         }
 
-        // Điều hướng & UI Control
         function switchView(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
@@ -494,7 +488,6 @@
             else if (currentState.view === 'types') switchView('grades');
         }
 
-        // Màn hình 1: Render Danh sách Khối
         function renderGrades() {
             const gradesSet = new Set([
                 ...appData.regular.map(d => d.grade),
@@ -502,17 +495,15 @@
             ]);
             
             let grades = Array.from(gradesSet).filter(Boolean).sort((a,b) => {
-                // Sắp xếp tự nhiên (Toán 6 -> Toán 7...)
                 let numA = parseInt(a.replace(/\D/g, '')) || 0;
                 let numB = parseInt(b.replace(/\D/g, '')) || 0;
                 return numA - numB;
             });
 
-            if(grades.length === 0) grades = ["Toán 6", "Toán 7", "Toán 8", "Toán 9"]; // Dự phòng
+            if(grades.length === 0) grades = ["Toán 6", "Toán 7", "Toán 8", "Toán 9"];
 
             const container = document.getElementById('grade-container');
             container.innerHTML = '';
-            
             const icons = ['📘', '📗', '📙', '📕', '🎓', '📚'];
 
             grades.forEach((grade, index) => {
@@ -540,13 +531,11 @@
             renderTests();
         }
 
-        // Màn hình 3: Render Danh sách Bài (Nhóm theo Chương hoặc Category)
         function renderTests() {
             const container = document.getElementById('test-container');
             container.innerHTML = '';
             
             let sourceData = currentState.type === 'regular' ? appData.regular : appData.periodic;
-            // Lọc theo khối
             let filtered = sourceData.filter(item => item.grade === currentState.grade);
             
             document.getElementById('test-title').innerText = currentState.type === 'regular' ? "Thường xuyên" : "Định kỳ";
@@ -558,7 +547,6 @@
                 return;
             }
 
-            // Nhóm dữ liệu
             let groups = {};
             filtered.forEach(item => {
                 let groupKey = currentState.type === 'regular' ? (item.chapter || 'Khác') : (item.category || 'Khác');
@@ -566,7 +554,6 @@
                 groups[groupKey].push(item);
             });
 
-            // Sinh HTML
             for (const [groupName, items] of Object.entries(groups)) {
                 let groupHtml = `<div class="chapter-group">
                     <div class="chapter-title">
@@ -578,16 +565,17 @@
 
                 items.forEach(item => {
                     let itemName = currentState.type === 'regular' ? item.lesson : item.displayName;
-                    let link = item.code;
-                    let hasLink = link && link.trim() !== "";
+                    let code = item.code;
+                    let hasCode = code && code.toString().trim() !== "";
                     
-                    let actionBtn = hasLink 
-                        ? `<a href="${link}" target="_blank" class="btn-action">Làm bài →</a>`
+                    // Nút bấm thực hiện hành động copy và chuyển trang
+                    let actionBtn = hasCode 
+                        ? `<button onclick="handleTakeTest('${code}')" class="btn-action">Vào thi →</button>`
                         : `<button class="btn-action disabled" disabled>Chưa mở</button>`;
 
                     let adminHtml = isAdmin ? `
                         <div class="admin-controls" style="display:flex;">
-                            <button class="btn-edit" onclick="editTest('${currentState.type}', ${item.row})">Sửa</button>
+                            <button class="btn-edit" onclick="editTest('${currentState.type}', ${item.row})">Sửa mã đề</button>
                         </div>
                     ` : '';
 
@@ -597,6 +585,7 @@
                                 <div class="test-icon">${currentState.type==='regular'?'📄':'⭐'}</div>
                                 <div class="test-info">
                                     <h3>${itemName}</h3>
+                                    ${isAdmin && hasCode ? `<p style="color: var(--primary); font-family: monospace;">Mã: ${code}</p>` : ''}
                                 </div>
                             </div>
                             <div style="flex-grow:1;"></div>
@@ -613,7 +602,46 @@
             switchView('tests');
         }
 
-        // Logic Admin (Mô phỏng)
+        // ==========================================
+        // TÍNH NĂNG TỰ ĐỘNG COPY VÀ CHUYỂN HƯỚNG
+        // ==========================================
+        function handleTakeTest(code) {
+            // Hàm phụ hỗ trợ copy tương thích nhiều trình duyệt di động
+            function fallbackCopyTextToClipboard(text) {
+                var textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try { document.execCommand('copy'); } catch (err) {}
+                document.body.removeChild(textArea);
+            }
+
+            // Tiến hành Copy mã
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).catch(() => {
+                    fallbackCopyTextToClipboard(code);
+                });
+            } else {
+                fallbackCopyTextToClipboard(code);
+            }
+
+            // Hiển thị Toast báo thành công
+            const toast = document.getElementById('toast');
+            toast.innerText = `Đã copy mã đề: ${code}. Đang mở trang làm bài...`;
+            toast.classList.add('show');
+
+            // Chuyển hướng sau 1.2s để học sinh kịp nhìn thấy thông báo
+            setTimeout(() => {
+                toast.classList.remove('show');
+                window.location.href = "https://anphuceducation.netlify.app/student";
+            }, 1200);
+        }
+        // ==========================================
+
         async function promptLogin() {
             if (isAdmin) {
                 isAdmin = false;
@@ -626,19 +654,17 @@
             const pass = prompt("Nhập mật khẩu Giáo viên:");
             if (!pass) return;
 
-            // Dùng fetch để gọi action="login" như trong Code1.docx
             try {
                 const response = await fetch(`${GAS_API_URL}?action=login&pass=${encodeURIComponent(pass)}`);
                 const res = await response.json();
                 if (res.valid) {
                     isAdmin = true;
                     document.getElementById('btnLogin').innerText = "Đăng xuất GV";
-                    if(currentState.view === 'tests') renderTests(); // Cập nhật lại UI hiển thị nút Sửa
+                    if(currentState.view === 'tests') renderTests(); 
                 } else {
                     alert("Mật khẩu không chính xác!");
                 }
             } catch(e) {
-                // Fallback nếu API chưa hoạt động
                 if(pass === "Anphuc01") {
                     isAdmin = true;
                     document.getElementById('btnLogin').innerText = "Đăng xuất GV";
@@ -647,13 +673,12 @@
             }
         }
 
-        // Hàm Sửa link gọi API updateCode
         async function editTest(sheetType, row) {
-            const newLink = prompt("Nhập link (code) mới cho bài kiểm tra này:");
-            if(newLink !== null) {
+            const newCode = prompt("Nhập mã đề (code) mới cho bài kiểm tra này:");
+            if(newCode !== null) {
                 let sheetName = sheetType === 'regular' ? 'RegularData' : 'PeriodicData';
                 try {
-                    await fetch(`${GAS_API_URL}?action=updateCode&sheet=${sheetName}&row=${row}&code=${encodeURIComponent(newLink)}`);
+                    await fetch(`${GAS_API_URL}?action=updateCode&sheet=${sheetName}&row=${row}&code=${encodeURIComponent(newCode)}`);
                     alert("Đã cập nhật thành công! Vui lòng tải lại trang để xem thay đổi.");
                 } catch (e) {
                     alert("Cập nhật lỗi. (Nếu dùng Demo, hệ thống sẽ không ghi nhận).");
