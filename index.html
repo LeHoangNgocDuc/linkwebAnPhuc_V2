@@ -44,11 +44,10 @@
         /* --- HEADER --- */
         header {
             background: var(--card-bg);
-            height: 72px;
+            min-height: 72px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
+            padding: 12px 24px;
             box-shadow: var(--shadow-header);
             position: sticky;
             top: 0;
@@ -59,6 +58,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
+            width: 100%;
         }
 
         .btn-back {
@@ -67,6 +67,7 @@
             border: none;
             width: 40px;
             height: 40px;
+            min-width: 40px;
             border-radius: 50%;
             cursor: pointer;
             align-items: center;
@@ -83,38 +84,23 @@
         }
 
         .logo-title {
-            font-size: 18px;
-            font-weight: 800;
+            font-size: 13px;
+            font-weight: 700;
             color: var(--primary);
-            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            line-height: 1.4;
+            text-transform: uppercase;
         }
 
         .logo-img {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
             border-radius: 8px;
             object-fit: cover;
             border: 1px solid var(--border-color);
-        }
-
-        .btn-login {
-            background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-sub);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-login:hover {
-            border-color: var(--primary);
-            color: var(--primary);
         }
 
         /* --- MAIN CONTAINER --- */
@@ -210,27 +196,10 @@
         .card-title {
             font-size: 20px;
             font-weight: 700;
+            line-height: 1.3;
         }
 
         /* Test List (Danh sách bài) */
-        .chapter-group {
-            margin-bottom: 32px;
-        }
-        
-        .chapter-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-            border-bottom: 2px solid #E2E8F0;
-            padding-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .card-test {
             background: var(--card-bg);
             border-radius: var(--radius-md);
@@ -272,11 +241,7 @@
             font-weight: 600;
             color: var(--text-main);
             margin-bottom: 4px;
-        }
-
-        .test-info p {
-            font-size: 13px;
-            color: var(--text-sub);
+            line-height: 1.4;
         }
 
         .btn-action {
@@ -298,25 +263,6 @@
 
         .btn-action:hover { background: var(--primary-hover); }
         .btn-action.disabled { background: #94A3B8; cursor: not-allowed; }
-
-        /* Admin Controls */
-        .admin-controls {
-            display: none;
-            border-top: 1px solid #F1F5F9;
-            padding-top: 12px;
-            margin-top: auto;
-            gap: 8px;
-        }
-        .admin-controls button {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .btn-edit { background: #FEF3C7; color: #D97706; }
 
         /* Loader & Toast */
         #loader {
@@ -366,6 +312,7 @@
             font-size: 13px;
             border-top: 1px solid var(--border-color);
             background: var(--card-bg);
+            line-height: 1.6;
         }
         footer strong { color: var(--primary); }
 
@@ -373,10 +320,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 600px) {
+            header { padding: 12px 16px; }
             .grid-container { grid-template-columns: 1fr; }
             .card-large { padding: 24px 20px; }
             .card-icon { width: 56px; height: 56px; font-size: 28px; }
             main { padding: 24px 16px 40px; }
+            .logo-title { font-size: 11px; gap: 8px; }
         }
     </style>
 </head>
@@ -389,10 +338,9 @@
             </button>
             <div class="logo-title">
                 <img src="https://raw.githubusercontent.com/LeHoangNgocDuc/linkwebAnPhuc_V2/main/logo.jpg" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=A&background=2563EB&color=fff&size=128&font-size=0.6&bold=true';">
-                An Phúc Education
+                <span>HỆ THỐNG KIỂM TRA TRỰC TUYẾN<br>TRUNG TÂM TOÁN AN PHÚC EDUCATION</span>
             </div>
         </div>
-        <button class="btn-login" onclick="promptLogin()" id="btnLogin">Giáo viên</button>
     </header>
 
     <main>
@@ -409,7 +357,7 @@
             <div class="grid-container" id="grade-container"></div>
         </div>
 
-        <!-- Màn hình 2: Chọn Loại Bài -->
+        <!-- Màn hình 2: Chọn Loại Bài (Thường xuyên / Định kỳ) -->
         <div id="view-types" class="view-section">
             <h1 class="section-title" id="type-title">Toán</h1>
             <p class="section-desc">Chọn hình thức kiểm tra</p>
@@ -418,20 +366,27 @@
                     <div class="card-icon icon-blue">📝</div>
                     <div>
                         <h2 class="card-title">Thường xuyên</h2>
-                        <p style="color:var(--text-sub); font-size:14px;">Kiểm tra 15p, bài tập theo chương</p>
+                        <p style="color:var(--text-sub); font-size:14px; margin-top:4px;">Kiểm tra 15p, bài tập theo chương</p>
                     </div>
                 </div>
                 <div class="card-large" onclick="selectType('periodic')">
                     <div class="card-icon icon-orange">🏆</div>
                     <div>
                         <h2 class="card-title">Định kỳ</h2>
-                        <p style="color:var(--text-sub); font-size:14px;">Thi Giữa kỳ, Cuối kỳ, Luyện đề</p>
+                        <p style="color:var(--text-sub); font-size:14px; margin-top:4px;">Thi Giữa kỳ, Cuối kỳ, Luyện đề</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Màn hình 3: Danh sách bài -->
+        <!-- Màn hình 3: Chọn Chương / Hình thức (Level mới thêm vào) -->
+        <div id="view-categories" class="view-section">
+            <h1 class="section-title" id="category-title">Chọn Chương</h1>
+            <p class="section-desc" id="category-desc">Toán</p>
+            <div class="grid-container" id="category-container"></div>
+        </div>
+
+        <!-- Màn hình 4: Danh sách bài -->
         <div id="view-tests" class="view-section">
             <h1 class="section-title" id="test-title">Danh sách bài</h1>
             <p class="section-desc" id="test-desc">Các bài kiểm tra đang mở</p>
@@ -451,8 +406,7 @@
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxGe_4g2lkis1BurcB55ODLDKkkG1Fisy2rinlv07t1m9UgZO516YLq6ke7IfxC7ef_Xw/exec";
         
         let appData = { regular: [], periodic: [] };
-        let currentState = { view: 'grades', grade: null, type: null };
-        let isAdmin = false;
+        let currentState = { view: 'grades', grade: null, type: null, category: null };
 
         document.addEventListener('DOMContentLoaded', initApp);
 
@@ -465,13 +419,17 @@
                 appData.regular = Array.isArray(regRes) ? regRes : [];
                 appData.periodic = Array.isArray(perRes) ? perRes : [];
             } catch (err) {
+                // Dữ liệu mẫu hiển thị nếu API chưa hoạt động
                 appData.regular = [
                     { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 1: Tập hợp', code: 'D6C1B1' },
                     { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 2: Cách ghi số tự nhiên', code: 'D6C1B2' },
+                    { grade: 'Toán 6', chapter: 'Chương 2: Số nguyên', lesson: 'Bài 1: Số nguyên âm', code: 'D6C2B1' },
                     { grade: 'Toán 7', chapter: 'Chương 1: Số hữu tỉ', lesson: 'Bài 1: Khái niệm', code: '' },
                     { grade: 'Tuyển sinh 10', chapter: 'Luyện đề', lesson: 'Đề số 1', code: 'TS1001' }
                 ];
                 appData.periodic = [
+                    { grade: 'Toán 6', category: 'Giữa kì I', displayName: 'Đề ôn tập số 1', code: 'GKI01' },
+                    { grade: 'Toán 6', category: 'Cuối kì I', displayName: 'Đề ôn tập số 1', code: 'CKI01' },
                     { grade: 'Tốt nghiệp THPT', category: 'Thi thử', displayName: 'Môn Toán', code: 'THPTQG01' }
                 ];
             }
@@ -479,6 +437,7 @@
             renderGrades();
         }
 
+        // Logic điều hướng (cập nhật để hỗ trợ 4 cấp độ)
         function switchView(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
@@ -494,17 +453,18 @@
         }
 
         function goBack() {
-            if (currentState.view === 'tests') switchView('types');
+            if (currentState.view === 'tests') switchView('categories');
+            else if (currentState.view === 'categories') switchView('types');
             else if (currentState.view === 'types') switchView('grades');
         }
 
+        // 1. Render Khối
         function renderGrades() {
             const gradesSet = new Set([
                 ...appData.regular.map(d => d.grade),
                 ...appData.periodic.map(d => d.grade)
             ]);
             
-            // Thứ tự hiển thị ưu tiên
             const gradeOrder = [
                 "Toán 6", "Toán 7", "Toán 8", "Toán 9", 
                 "Toán 10", "Toán 11", "Toán 12",
@@ -514,11 +474,9 @@
             let grades = Array.from(gradesSet).filter(Boolean).sort((a, b) => {
                 let indexA = gradeOrder.indexOf(a);
                 let indexB = gradeOrder.indexOf(b);
-
                 if (indexA !== -1 && indexB !== -1) return indexA - indexB;
                 if (indexA !== -1) return -1;
                 if (indexB !== -1) return 1;
-                
                 return a.localeCompare(b);
             });
 
@@ -528,15 +486,9 @@
             container.innerHTML = '';
 
             const iconsMap = {
-                "Toán 6": "📘",
-                "Toán 7": "📗",
-                "Toán 8": "📙",
-                "Toán 9": "📕",
-                "Toán 10": "🎓",
-                "Toán 11": "🎓",
-                "Toán 12": "🎓",
-                "Tuyển sinh 10": "🎯",
-                "Tốt nghiệp THPT": "🏅"
+                "Toán 6": "📘", "Toán 7": "📗", "Toán 8": "📙", "Toán 9": "📕",
+                "Toán 10": "🎓", "Toán 11": "🎓", "Toán 12": "🎓",
+                "Tuyển sinh 10": "🎯", "Tốt nghiệp THPT": "🏅"
             };
 
             grades.forEach(grade => {
@@ -561,17 +513,72 @@
 
         function selectType(type) {
             currentState.type = type;
-            renderTests();
+            renderCategories(); // Sau khi chọn loại thì hiện Chương hoặc Hình thức
         }
 
-        function renderTests() {
-            const container = document.getElementById('test-container');
+        // 2. Render Chương / Hình thức
+        function renderCategories() {
+            const container = document.getElementById('category-container');
             container.innerHTML = '';
             
             let sourceData = currentState.type === 'regular' ? appData.regular : appData.periodic;
             let filtered = sourceData.filter(item => item.grade === currentState.grade);
             
-            document.getElementById('test-title').innerText = currentState.type === 'regular' ? "Thường xuyên" : "Định kỳ";
+            document.getElementById('category-title').innerText = currentState.type === 'regular' ? "Chọn Chương" : "Chọn Hình thức";
+            document.getElementById('category-desc').innerText = currentState.grade;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-sub); padding:40px;">Chưa có dữ liệu trong mục này.</p>`;
+                switchView('categories');
+                return;
+            }
+
+            // Lấy danh sách các Chương hoặc Hình thức (lọc trùng lặp)
+            let categories = [];
+            filtered.forEach(item => {
+                let catName = currentState.type === 'regular' ? (item.chapter || 'Khác') : (item.category || 'Khác');
+                if (!categories.includes(catName)) {
+                    categories.push(catName);
+                }
+            });
+
+            categories.forEach(cat => {
+                let icon = currentState.type === 'regular' ? '📁' : '📂';
+                container.innerHTML += `
+                    <div class="card-large" onclick="selectCategory('${cat}')" style="padding: 24px; min-height: 100px;">
+                        <div class="card-icon" style="width: 52px; height: 52px; font-size: 26px;">${icon}</div>
+                        <div>
+                            <h2 class="card-title" style="font-size: 17px;">${cat}</h2>
+                        </div>
+                    </div>
+                `;
+            });
+
+            switchView('categories');
+        }
+
+        function selectCategory(cat) {
+            currentState.category = cat;
+            renderTests();
+        }
+
+        // 3. Render Danh sách bài (Dựa trên Chương/Hình thức đã chọn)
+        function renderTests() {
+            const container = document.getElementById('test-container');
+            container.innerHTML = '';
+            
+            let sourceData = currentState.type === 'regular' ? appData.regular : appData.periodic;
+            
+            // Lọc theo Khối VÀ Chương/Hình thức
+            let filtered = sourceData.filter(item => {
+                let matchGrade = item.grade === currentState.grade;
+                let matchCat = currentState.type === 'regular' 
+                    ? item.chapter === currentState.category 
+                    : item.category === currentState.category;
+                return matchGrade && matchCat;
+            });
+            
+            document.getElementById('test-title').innerText = currentState.category;
             document.getElementById('test-desc').innerText = currentState.grade;
 
             if (filtered.length === 0) {
@@ -580,60 +587,38 @@
                 return;
             }
 
-            let groups = {};
+            let groupHtml = `<div class="grid-container">`;
+            
             filtered.forEach(item => {
-                let groupKey = currentState.type === 'regular' ? (item.chapter || 'Khác') : (item.category || 'Khác');
-                if (!groups[groupKey]) groups[groupKey] = [];
-                groups[groupKey].push(item);
+                let itemName = currentState.type === 'regular' ? item.lesson : item.displayName;
+                let code = item.code;
+                let hasCode = code && code.toString().trim() !== "";
+                
+                let actionBtn = hasCode 
+                    ? `<button onclick="handleTakeTest('${code}')" class="btn-action">Vào thi →</button>`
+                    : `<button class="btn-action disabled" disabled>Chưa mở</button>`;
+
+                groupHtml += `
+                    <div class="card-test">
+                        <div class="test-header">
+                            <div class="test-icon">${currentState.type==='regular'?'📄':'⭐'}</div>
+                            <div class="test-info">
+                                <h3>${itemName}</h3>
+                            </div>
+                        </div>
+                        <div style="flex-grow:1;"></div>
+                        ${actionBtn}
+                    </div>
+                `;
             });
 
-            for (const [groupName, items] of Object.entries(groups)) {
-                let groupHtml = `<div class="chapter-group">
-                    <div class="chapter-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                        ${groupName}
-                    </div>
-                    <div class="grid-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
-                `;
-
-                items.forEach(item => {
-                    let itemName = currentState.type === 'regular' ? item.lesson : item.displayName;
-                    let code = item.code;
-                    let hasCode = code && code.toString().trim() !== "";
-                    
-                    let actionBtn = hasCode 
-                        ? `<button onclick="handleTakeTest('${code}')" class="btn-action">Vào thi →</button>`
-                        : `<button class="btn-action disabled" disabled>Chưa mở</button>`;
-
-                    let adminHtml = isAdmin ? `
-                        <div class="admin-controls" style="display:flex;">
-                            <button class="btn-edit" onclick="editTest('${currentState.type}', ${item.row})">Sửa mã đề</button>
-                        </div>
-                    ` : '';
-
-                    groupHtml += `
-                        <div class="card-test">
-                            <div class="test-header">
-                                <div class="test-icon">${currentState.type==='regular'?'📄':'⭐'}</div>
-                                <div class="test-info">
-                                    <h3>${itemName}</h3>
-                                    ${isAdmin && hasCode ? `<p style="color: var(--primary); font-family: monospace;">Mã: ${code}</p>` : ''}
-                                </div>
-                            </div>
-                            <div style="flex-grow:1;"></div>
-                            ${actionBtn}
-                            ${adminHtml}
-                        </div>
-                    `;
-                });
-
-                groupHtml += `</div></div>`;
-                container.innerHTML += groupHtml;
-            }
+            groupHtml += `</div>`;
+            container.innerHTML = groupHtml;
 
             switchView('tests');
         }
 
+        // TÍNH NĂNG TỰ ĐỘNG COPY VÀ CHUYỂN HƯỚNG
         function handleTakeTest(code) {
             function fallbackCopyTextToClipboard(text) {
                 var textArea = document.createElement("textarea");
@@ -664,50 +649,6 @@
                 toast.classList.remove('show');
                 window.location.href = "https://anphuceducation.netlify.app/student";
             }, 1200);
-        }
-
-        async function promptLogin() {
-            if (isAdmin) {
-                isAdmin = false;
-                document.getElementById('btnLogin').innerText = "Giáo viên";
-                if(currentState.view === 'tests') renderTests();
-                alert("Đã đăng xuất tài khoản Giáo viên.");
-                return;
-            }
-
-            const pass = prompt("Nhập mật khẩu Giáo viên:");
-            if (!pass) return;
-
-            try {
-                const response = await fetch(`${GAS_API_URL}?action=login&pass=${encodeURIComponent(pass)}`);
-                const res = await response.json();
-                if (res.valid) {
-                    isAdmin = true;
-                    document.getElementById('btnLogin').innerText = "Đăng xuất GV";
-                    if(currentState.view === 'tests') renderTests(); 
-                } else {
-                    alert("Mật khẩu không chính xác!");
-                }
-            } catch(e) {
-                if(pass === "Anphuc01") {
-                    isAdmin = true;
-                    document.getElementById('btnLogin').innerText = "Đăng xuất GV";
-                    if(currentState.view === 'tests') renderTests();
-                }
-            }
-        }
-
-        async function editTest(sheetType, row) {
-            const newCode = prompt("Nhập mã đề (code) mới cho bài kiểm tra này:");
-            if(newCode !== null) {
-                let sheetName = sheetType === 'regular' ? 'RegularData' : 'PeriodicData';
-                try {
-                    await fetch(`${GAS_API_URL}?action=updateCode&sheet=${sheetName}&row=${row}&code=${encodeURIComponent(newCode)}`);
-                    alert("Đã cập nhật thành công! Vui lòng tải lại trang để xem thay đổi.");
-                } catch (e) {
-                    alert("Cập nhật lỗi. (Nếu dùng Demo, hệ thống sẽ không ghi nhận).");
-                }
-            }
         }
     </script>
 </body>
