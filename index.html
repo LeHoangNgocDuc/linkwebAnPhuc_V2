@@ -92,6 +92,14 @@
             gap: 10px;
         }
 
+        .logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
         .btn-login {
             background: transparent;
             border: 2px solid var(--border-color);
@@ -193,6 +201,7 @@
             align-items: center;
             justify-content: center;
             font-size: 32px;
+            background: #F1F5F9;
         }
 
         .icon-blue { background: #DBEAFE; color: #2563EB; }
@@ -333,7 +342,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #10B981; /* Màu xanh lá thông báo thành công */
+            background: #10B981;
             color: white;
             padding: 14px 28px;
             border-radius: 30px;
@@ -379,7 +388,7 @@
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
             <div class="logo-title">
-                <div style="background:var(--primary); color:white; width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">A</div>
+                <img src="https://raw.githubusercontent.com/LeHoangNgocDuc/linkwebAnPhuc_V2/main/logo.jpg" alt="Logo" class="logo-img" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=A&background=2563EB&color=fff&size=128&font-size=0.6&bold=true';">
                 An Phúc Education
             </div>
         </div>
@@ -396,7 +405,7 @@
         <!-- Màn hình 1: Chọn Khối -->
         <div id="view-grades" class="view-section">
             <h1 class="section-title">Khối lớp của bạn</h1>
-            <p class="section-desc">Chọn khối lớp để bắt đầu làm bài</p>
+            <p class="section-desc">Chọn mục để bắt đầu làm bài</p>
             <div class="grid-container" id="grade-container"></div>
         </div>
 
@@ -459,10 +468,11 @@
                 appData.regular = [
                     { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 1: Tập hợp', code: 'D6C1B1' },
                     { grade: 'Toán 6', chapter: 'Chương 1: Số tự nhiên', lesson: 'Bài 2: Cách ghi số tự nhiên', code: 'D6C1B2' },
-                    { grade: 'Toán 7', chapter: 'Chương 1: Số hữu tỉ', lesson: 'Bài 1: Khái niệm', code: '' }
+                    { grade: 'Toán 7', chapter: 'Chương 1: Số hữu tỉ', lesson: 'Bài 1: Khái niệm', code: '' },
+                    { grade: 'Tuyển sinh 10', chapter: 'Luyện đề', lesson: 'Đề số 1', code: 'TS1001' }
                 ];
                 appData.periodic = [
-                    { grade: 'Toán 6', category: 'Cuối kì II', displayName: 'THCS Lam Sơn', code: 'T6CKII2526DE01LS' }
+                    { grade: 'Tốt nghiệp THPT', category: 'Thi thử', displayName: 'Môn Toán', code: 'THPTQG01' }
                 ];
             }
             document.getElementById('loader').style.display = 'none';
@@ -494,23 +504,46 @@
                 ...appData.periodic.map(d => d.grade)
             ]);
             
-            let grades = Array.from(gradesSet).filter(Boolean).sort((a,b) => {
-                let numA = parseInt(a.replace(/\D/g, '')) || 0;
-                let numB = parseInt(b.replace(/\D/g, '')) || 0;
-                return numA - numB;
+            // Thứ tự hiển thị ưu tiên
+            const gradeOrder = [
+                "Toán 6", "Toán 7", "Toán 8", "Toán 9", 
+                "Toán 10", "Toán 11", "Toán 12",
+                "Tuyển sinh 10", "Tốt nghiệp THPT"
+            ];
+
+            let grades = Array.from(gradesSet).filter(Boolean).sort((a, b) => {
+                let indexA = gradeOrder.indexOf(a);
+                let indexB = gradeOrder.indexOf(b);
+
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                
+                return a.localeCompare(b);
             });
 
             if(grades.length === 0) grades = ["Toán 6", "Toán 7", "Toán 8", "Toán 9"];
 
             const container = document.getElementById('grade-container');
             container.innerHTML = '';
-            const icons = ['📘', '📗', '📙', '📕', '🎓', '📚'];
 
-            grades.forEach((grade, index) => {
-                const icon = icons[index % icons.length];
+            const iconsMap = {
+                "Toán 6": "📘",
+                "Toán 7": "📗",
+                "Toán 8": "📙",
+                "Toán 9": "📕",
+                "Toán 10": "🎓",
+                "Toán 11": "🎓",
+                "Toán 12": "🎓",
+                "Tuyển sinh 10": "🎯",
+                "Tốt nghiệp THPT": "🏅"
+            };
+
+            grades.forEach(grade => {
+                const icon = iconsMap[grade] || "📚"; 
                 container.innerHTML += `
                     <div class="card-large" onclick="selectGrade('${grade}')">
-                        <div class="card-icon" style="background:#F1F5F9;">${icon}</div>
+                        <div class="card-icon">${icon}</div>
                         <div>
                             <h2 class="card-title">${grade}</h2>
                         </div>
@@ -539,7 +572,7 @@
             let filtered = sourceData.filter(item => item.grade === currentState.grade);
             
             document.getElementById('test-title').innerText = currentState.type === 'regular' ? "Thường xuyên" : "Định kỳ";
-            document.getElementById('test-desc').innerText = `Khối ${currentState.grade}`;
+            document.getElementById('test-desc').innerText = currentState.grade;
 
             if (filtered.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:var(--text-sub); padding:40px;">Chưa có bài kiểm tra nào trong mục này.</p>`;
@@ -568,7 +601,6 @@
                     let code = item.code;
                     let hasCode = code && code.toString().trim() !== "";
                     
-                    // Nút bấm thực hiện hành động copy và chuyển trang
                     let actionBtn = hasCode 
                         ? `<button onclick="handleTakeTest('${code}')" class="btn-action">Vào thi →</button>`
                         : `<button class="btn-action disabled" disabled>Chưa mở</button>`;
@@ -602,11 +634,7 @@
             switchView('tests');
         }
 
-        // ==========================================
-        // TÍNH NĂNG TỰ ĐỘNG COPY VÀ CHUYỂN HƯỚNG
-        // ==========================================
         function handleTakeTest(code) {
-            // Hàm phụ hỗ trợ copy tương thích nhiều trình duyệt di động
             function fallbackCopyTextToClipboard(text) {
                 var textArea = document.createElement("textarea");
                 textArea.value = text;
@@ -620,7 +648,6 @@
                 document.body.removeChild(textArea);
             }
 
-            // Tiến hành Copy mã
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(code).catch(() => {
                     fallbackCopyTextToClipboard(code);
@@ -629,18 +656,15 @@
                 fallbackCopyTextToClipboard(code);
             }
 
-            // Hiển thị Toast báo thành công
             const toast = document.getElementById('toast');
             toast.innerText = `Đã copy mã đề: ${code}. Đang mở trang làm bài...`;
             toast.classList.add('show');
 
-            // Chuyển hướng sau 1.2s để học sinh kịp nhìn thấy thông báo
             setTimeout(() => {
                 toast.classList.remove('show');
                 window.location.href = "https://anphuceducation.netlify.app/student";
             }, 1200);
         }
-        // ==========================================
 
         async function promptLogin() {
             if (isAdmin) {
